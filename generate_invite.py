@@ -1,3 +1,6 @@
+#!/usr/bin/python3
+
+import sys
 import string
 import random
 
@@ -19,7 +22,21 @@ def generate_invite():
     return create_invite(username, email, last_name, first_name)
 
 if __name__ == '__main__':
-    f = open('invite.csv', "w")
-    f.write(generate_invite() + '\n')
-    f.write(generate_invite() + '\n')
-    f.write(generate_invite())
+    if len(sys.argv) < 2:
+        print('Number of invites is not set')
+        print('Usage:', sys.argv[0], 'number', '[filename]')
+        exit(1)
+    
+    if not sys.argv[1].isnumeric():
+        print('Number of invites has wrong format')
+        exit(2)
+
+    if len(sys.argv) > 2:
+        try:
+            sys.stdout = open(sys.argv[2], 'w')
+        except Exception as exc:
+            print(exc)
+            exit(3)
+    
+    for i in range(int(sys.argv[1])):
+        print(generate_invite())
