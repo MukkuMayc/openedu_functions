@@ -9,7 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "form-data": "^3.0.0",
     "node-fetch": "^2.6.1"
-  }
+  },
+  "type": "module"
 }

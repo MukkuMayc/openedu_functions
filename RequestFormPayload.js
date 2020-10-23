@@ -1,4 +1,4 @@
-module.exports = class RequestPayload {
+class RequestFormPayload {
   constructor(props) {
     props = props || {};
     const { token, boundary } = props;
@@ -29,4 +29,6 @@ module.exports = class RequestPayload {
   toString() {
     return this.payload;
   }
-};
+}
+
+export default RequestFormPayload;
