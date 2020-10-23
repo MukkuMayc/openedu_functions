@@ -1,13 +1,6 @@
 import fetch from "node-fetch";
-import { defaultHeaders } from "./Config.js";
-import RequestFormPayload from "./RequestFormPayload.js";
-
-function formInvitePayload(students) {
-  let payload = new RequestFormPayload();
-  payload.addField("csv", students, true, true);
-  console.log(payload.toString());
-  return payload.toString();
-}
+import { defaultHeaders } from "../Config.js";
+import formInvitePayload from "./invitePayload.js";
 
 async function inviteStudents(students) {
   const res = await fetch("https://openedu.ru/upd/spbu/student/massinvite/", {

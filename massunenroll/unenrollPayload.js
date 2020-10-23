@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import RequestFormPayload from "./RequestFormPayload.js";
 import { defaultHeaders } from "./Config.js";
 
@@ -33,30 +32,4 @@ async function formUnenrollPayloadFromCourse(course, students) {
   return formUnenrollPayload(courseId, session, reason, students, university);
 }
 
-async function unenrollStudents(course, students) {
-  const res = await formUnenrollPayloadFromCourse(course, students).then(
-    (payload) => {
-      return fetch("https://openedu.ru/upd/spbu/student/massunenroll/", {
-        headers: {
-          ...defaultHeaders,
-          "Content-Type":
-            "multipart/form-data; boundary=---------------------------myform",
-        },
-        method: "POST",
-        body: payload,
-        referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
-      }).then((res) => console.log(res.status) || res.json());
-    }
-  );
-
-  if (res.status === 0) {
-    console.log("Successfully unenrolled in", course.tag, course.session);
-  } else {
-    console.log(res);
-    console.log(res.status, "Some error happened");
-  }
-
-  return res;
-}
-
-export default unenrollStudents;
+export { formUnenrollPayload, formUnenrollPayloadFromCourse };
