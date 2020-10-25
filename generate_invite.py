@@ -33,10 +33,15 @@ if __name__ == '__main__':
 
     if len(sys.argv) > 2:
         try:
-            sys.stdout = open(sys.argv[2], 'w')
+            inp_file = open(sys.argv[2], 'w')
+            sys.stdout = inp_file
         except Exception as exc:
             print(exc)
             exit(3)
     
     for i in range(int(sys.argv[1])):
         print(generate_invite())
+
+    if len(sys.argv) > 2:
+        if inp_file:
+            inp_file.close()
