@@ -5,7 +5,8 @@ class RequestFormPayload {
     this.boundary = boundary || "-----------------------------myform";
     this.token =
       token ||
-      "SikIkbBTaVNX4GEgUsxeBysi8ZgEf0LEkdkMsYhfJxEZTtQBJ6430eFMwKvdU0zG";
+      process.env.CSRF_MIDDLEWARE_TOKEN ||
+      console.log("Warning: csrfmiddlewaretoken not found!");
     this.payload = "";
     this.addField("csrfmiddlewaretoken", this.token);
   }
