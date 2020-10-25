@@ -18,20 +18,24 @@ async function formEnrollPayloadFromCourse(course, students) {
   let res = await fetch(
     `https://openedu.ru/autocomplete/course/?q=${course.tag}&forward={"university":"${university}"}`,
     {
-      headers: defaultHeaders,
+      headers: {
+        ...defaultHeaders,
+        referer: "https://openedu.ru/upd/spbu/student/massenroll/",
+      },
       method: "GET",
-      referer: "https://openedu.ru/upd/spbu/student/massenroll/",
     }
-  ).then((res) => res.json());
+  ).then((res) => console.log(res.status) || res.json());
 
   const courseId = res.results[0].id;
 
   res = await fetch(
     `https://openedu.ru/autocomplete/session/active?forward={"course":"${courseId}","university":"${university}"}`,
     {
-      headers: defaultHeaders,
+      headers: {
+        ...defaultHeaders,
+        referer: "https://openedu.ru/upd/spbu/student/massenroll/",
+      },
       method: "GET",
-      referer: "https://openedu.ru/upd/spbu/student/massenroll/",
     }
   ).then((res) => res.json());
 

@@ -10,10 +10,10 @@ async function enrollStudents(course, students) {
           ...defaultHeaders,
           "Content-Type":
             "multipart/form-data; boundary=---------------------------myform",
+          referer: "https://openedu.ru/upd/spbu/student/massenroll/",
         },
         method: "POST",
         body: payload,
-        referer: "https://openedu.ru/upd/spbu/student/massenroll/",
       }).then((res) => res.json());
     }
   );
