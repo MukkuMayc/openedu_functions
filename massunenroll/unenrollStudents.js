@@ -1,6 +1,6 @@
 import fetch from "node-fetch";
 import { defaultHeaders } from "../Config.js";
-import formUnenrollPayloadFromCourse from "./unenrollPayload.js";
+import { formUnenrollPayloadFromCourse } from "./unenrollPayload.js";
 
 async function unenrollStudents(course, students) {
   const res = await formUnenrollPayloadFromCourse(course, students).then(
@@ -10,10 +10,10 @@ async function unenrollStudents(course, students) {
           ...defaultHeaders,
           "Content-Type":
             "multipart/form-data; boundary=---------------------------myform",
+          referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
         },
         method: "POST",
         body: payload,
-        referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
       }).then((res) => res.json());
     }
   );

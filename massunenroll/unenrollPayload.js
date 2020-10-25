@@ -1,5 +1,6 @@
-import RequestFormPayload from "./RequestFormPayload.js";
-import { defaultHeaders } from "./Config.js";
+import fetch from "node-fetch";
+import RequestFormPayload from "../RequestFormPayload.js";
+import { defaultHeaders } from "../Config.js";
 
 function formUnenrollPayload(course, session, reason, students, university) {
   let payload = new RequestFormPayload();
@@ -16,14 +17,26 @@ async function formUnenrollPayloadFromCourse(course, students) {
   const university = 6;
   let res = await fetch(
     `https://openedu.ru/autocomplete/course/?q=${course.tag}&$forward={"university":"${university}"}`,
-    { headers: defaultHeaders, method: "GET" }
+    {
+      headers: {
+        ...defaultHeaders,
+        referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
+      },
+      method: "GET",
+    }
   ).then((res) => res.json());
 
   const courseId = res.results[0].id;
 
   res = await fetch(
     `https://openedu.ru/autocomplete/session/active?forward={"course":"${courseId}","university":"${university}"}`,
-    { headers: defaultHeaders, method: "GET" }
+    {
+      headers: {
+        ...defaultHeaders,
+        referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
+      },
+      method: "GET",
+    }
   ).then((res) => res.json());
 
   const session = res.results.find((el) => el.text.includes(course.session)).id;
