@@ -1,7 +1,5 @@
-import fetch from "node-fetch";
 import RequestFormPayload from "../RequestFormPayload.js";
-import { defaultHeaders } from "../Config.js";
-import parseString from "set-cookie-parser";
+import request from "../request.js";
 
 function formUnenrollPayload(course, session, reason, students, university) {
   let payload = new RequestFormPayload();
@@ -14,51 +12,11 @@ function formUnenrollPayload(course, session, reason, students, university) {
   return payload.toString();
 }
 
-function request(
-  url,
-  referer = "https://openedu.ru/upd/spbu/student/massunenroll/",
-  method = "GET"
-) {
-  return fetch(url, {
-    headers: {
-      ...defaultHeaders,
-      referer,
-    },
-    method,
-  })
-    .then((res) => {
-      const authenticated = parseString(res.headers.raw()["set-cookie"])?.find(
-        (el) => el.name === "authenticated"
-      )?.value;
-      let out = {};
-      if (authenticated === 0 || authenticated === "0") {
-        out.status = 1;
-        out.message = "User is not authenticated";
-        return out;
-      }
-      if (res.status !== 200) {
-        out.status = 2;
-        out.message = `Request didn't succeed, status code is ${res.status}`;
-        return out;
-      }
-      out.status = 0;
-      out.message = "OK";
-      out.res = res;
-      return out;
-    })
-    .catch((err) => {
-      return {
-        status: 3,
-        message: "Some error happened",
-        error: err,
-      };
-    });
-}
-
 async function formUnenrollPayloadFromCourse(course, students) {
   const university = 6;
   let res = await request(
-    `https://openedu.ru/autocomplete/course/?q=${course.tag}&forward={"university":"${university}"}`
+    `https://openedu.ru/autocomplete/course/?q=${course.tag}&forward={"university":"${university}"}`,
+    "https://openedu.ru/upd/spbu/student/massunenroll/"
   ).then(async (res) => {
     if (res.status === 0) {
       res.results = (await res.res.json()).results;
@@ -73,7 +31,8 @@ async function formUnenrollPayloadFromCourse(course, students) {
   const courseId = res.results[0].id;
 
   res = await request(
-    `https://openedu.ru/autocomplete/session/active?forward={"course":"${courseId}","university":"${university}"}`
+    `https://openedu.ru/autocomplete/session/active?forward={"course":"${courseId}","university":"${university}"}`,
+    "https://openedu.ru/upd/spbu/student/massunenroll/"
   ).then(async (res) => {
     if (res.status === 0) {
       res.results = (await res.res.json()).results;
