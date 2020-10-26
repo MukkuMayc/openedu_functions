@@ -1,9 +1,9 @@
 import {
   formUnenrollPayload,
-  formEnrollPayloadFromCourse,
+  formUnenrollPayloadFromCourse,
 } from "./unenrollPayload.js";
 
-test("Form unenroll payload from through parameters", () => {
+test("Form unenroll payload from parameters", () => {
   const payload =
     "-----------------------------myform\r\n" +
     'Content-Disposition: form-data; name="csrfmiddlewaretoken"\r\n' +
@@ -46,4 +46,45 @@ test("Form unenroll payload from through parameters", () => {
       6
     )
   ).toBe(payload);
+});
+
+test("Form unenroll payload only from course and session", async () => {
+  const payload =
+    "-----------------------------myform\r\n" +
+    'Content-Disposition: form-data; name="csrfmiddlewaretoken"\r\n' +
+    "\r\n" +
+    `${process.env.CSRF_MIDDLEWARE_TOKEN}\r\n` +
+    "-----------------------------myform\r\n" +
+    'Content-Disposition: form-data; name="course"\r\n' +
+    "\r\n" +
+    "287\r\n" +
+    "-----------------------------myform\r\n" +
+    'Content-Disposition: form-data; name="session"\r\n' +
+    "\r\n" +
+    "10002\r\n" +
+    "-----------------------------myform\r\n" +
+    'Content-Disposition: form-data; name="reason"\r\n' +
+    "\r\n" +
+    "Why not\r\n" +
+    "-----------------------------myform\r\n" +
+    'Content-Disposition: form-data; name="students"; filename="somefile.csv"\r\n' +
+    "Content-Type: text/csv\r\n" +
+    "\r\n" +
+    "hoYNcpSVka@CFuJ.ru\r\n" +
+    "CMIqskTRKD@ESxX.ru\r\n" +
+    "ncNQPMFgGD@zGpt.ru\r\n" +
+    "-----------------------------myform\r\n" +
+    'Content-Disposition: form-data; name="university"\r\n' +
+    "\r\n" +
+    "6\r\n" +
+    "-----------------------------myform\r\n" +
+    'Content-Disposition: form-data; name="skip_group_check"\r\n' +
+    "\r\n" +
+    "1\r\n" +
+    "-----------------------------myform\r\n";
+
+  await formUnenrollPayloadFromCourse(
+    { tag: "phylosophy", session: "fall_2020_spbu_spec" },
+    "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
+  ).then((res) => expect(res.payload).toBe(payload));
 });

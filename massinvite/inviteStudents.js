@@ -32,8 +32,4 @@ async function inviteStudents(students) {
     });
 }
 
-inviteStudents("VgTjuhPi;GXbJskHnAf@Osuu.ru;CmKHzu;tQfNvF;;;").then((res) =>
-  console.log(res.message)
-);
-
 export default inviteStudents;

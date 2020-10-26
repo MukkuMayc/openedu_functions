@@ -4,7 +4,7 @@ import { formEnrollPayloadFromCourse } from "./enrollPayload.js";
 
 async function enrollStudents(course, students) {
   const res = await formEnrollPayloadFromCourse(course, students).then(
-    (payload) => {
+    (res) => {
       return fetch("https://openedu.ru/upd/spbu/student/massenroll/", {
         headers: {
           ...defaultHeaders,
@@ -13,15 +13,15 @@ async function enrollStudents(course, students) {
           referer: "https://openedu.ru/upd/spbu/student/massenroll/",
         },
         method: "POST",
-        body: payload,
+        body: res.payload,
       }).then((res) => res.json());
     }
   );
 
-  if (res.status === 0) {
-    console.log("Successfully enrolled in", course.tag, course.session);
+  if (res?.status === 0) {
+    res.message = `Successfully enrolled in ${course.tag} ${course.session}`;
   } else {
-    console.log(res.status, "Some error happened");
+    res.message = "Some error happened";
   }
 
   return res;

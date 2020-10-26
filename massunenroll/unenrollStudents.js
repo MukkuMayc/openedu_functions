@@ -4,7 +4,11 @@ import { formUnenrollPayloadFromCourse } from "./unenrollPayload.js";
 
 async function unenrollStudents(course, students) {
   const res = await formUnenrollPayloadFromCourse(course, students).then(
-    (payload) => {
+    (res) => {
+      if (res !== 0) {
+        return res;
+      }
+
       return fetch("https://openedu.ru/upd/spbu/student/massunenroll/", {
         headers: {
           ...defaultHeaders,
@@ -13,15 +17,15 @@ async function unenrollStudents(course, students) {
           referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
         },
         method: "POST",
-        body: payload,
+        body: res.payload,
       }).then((res) => res.json());
     }
   );
 
-  if (res.status === 0) {
-    console.log("Successfully unenrolled in", course.tag, course.session);
+  if (res?.status === 0) {
+    res.message = `Successfully unenrolled in ${course.tag} ${course.session}`;
   } else {
-    console.log(res.status, "Some error happened");
+    res.message = "Some error happened";
   }
 
   return res;
