@@ -5,7 +5,7 @@ import { formUnenrollPayloadFromCourse } from "./unenrollPayload.js";
 async function unenrollStudents(course, students) {
   const res = await formUnenrollPayloadFromCourse(course, students).then(
     (res) => {
-      if (res !== 0) {
+      if (res.status !== 0) {
         return res;
       }
 
@@ -18,17 +18,27 @@ async function unenrollStudents(course, students) {
         },
         method: "POST",
         body: res.payload,
-      }).then((res) => res.json());
+      }).then((res) => {
+        if (res.status !== 200) {
+          return {
+            status: 1,
+            message: "Something went wrong in request",
+            res,
+          };
+        }
+        return res.json();
+      });
     }
   );
 
-  if (res?.status === 0) {
-    res.message = `Successfully unenrolled in ${course.tag} ${course.session}`;
-  } else {
-    res.message = "Some error happened";
+  if (res.status !== 0) {
+    return res;
   }
 
-  return res;
+  return {
+    status: 0,
+    message: `Successfully unenrolled from ${course.tag} ${course.session}`,
+  };
 }
 
 export default unenrollStudents;
