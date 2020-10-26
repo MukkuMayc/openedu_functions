@@ -88,3 +88,21 @@ test("Form unenroll payload only from course and session", async () => {
     "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
   ).then((res) => expect(res.payload).toBe(payload));
 });
+
+test("Unenroll payload from nonexistent course", async () => {
+  await formUnenrollPayloadFromCourse(
+    { tag: "nonexistent_course", session: "fall_2020_spbu_spec" },
+    "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
+  ).then((res) => expect(res.message).toBe("Course was not found"));
+});
+
+test("Unenroll payload from nonexistent session", async () => {
+  await formUnenrollPayloadFromCourse(
+    { tag: "phylosophy", session: "nonexistent_session" },
+    "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
+  ).then(
+    (res) =>
+      expect(res.status).toBe(2) ||
+      expect(res.message).toBe("Session was not found")
+  );
+});

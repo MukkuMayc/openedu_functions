@@ -28,6 +28,13 @@ async function formEnrollPayloadFromCourse(course, students) {
     return res;
   }
 
+  if (!(res?.results?.length > 0)) {
+    return {
+      status: 1,
+      message: "Course was not found",
+    };
+  }
+
   const courseId = res.results[0].id;
 
   res = await request(
@@ -44,7 +51,15 @@ async function formEnrollPayloadFromCourse(course, students) {
     return res;
   }
 
-  const session = res.results.find((el) => el.text.includes(course.session)).id;
+  const session = res.results.find((el) => el.text.includes(course.session))
+    ?.id;
+  if (!session) {
+    return {
+      status: 2,
+      message: "Session was not found",
+    };
+  }
+
   const enrollType = 13196;
 
   res = {
