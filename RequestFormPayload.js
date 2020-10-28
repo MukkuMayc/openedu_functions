@@ -1,3 +1,5 @@
+const ln = "\r\n";
+
 class RequestFormPayload {
   constructor(props) {
     props = props || {};
@@ -12,18 +14,18 @@ class RequestFormPayload {
   }
 
   addField(name, value, isCSV = false, isLast) {
-    this.payload = this.payload.concat(this.boundary, "\r\n");
+    this.payload = this.payload.concat(this.boundary, ln);
     this.payload = this.payload.concat(
       `Content-Disposition: form-data; name=\"${name}\"${
         isCSV ? '; filename="somefile.csv"' : ""
-      }\r\n`
+      }${ln}`
     );
     if (isCSV) {
-      this.payload = this.payload.concat("Content-Type: text/csv\r\n");
+      this.payload = this.payload.concat(`Content-Type: text/csv${ln}`);
     }
-    this.payload = this.payload.concat(`\r\n${value}\r\n`);
+    this.payload = this.payload.concat(`${ln}${value}${ln}`);
     if (isLast) {
-      this.payload = this.payload.concat(this.boundary, "\r\n");
+      this.payload = this.payload.concat(this.boundary, ln);
     }
   }
 
