@@ -16,7 +16,7 @@ async function formEnrollPayloadFromCourse(course, students) {
   const university = 6;
   let res = await request(
     `https://openedu.ru/autocomplete/course/?q=${course.tag}&forward={"university":"${university}"}`,
-    "https://openedu.ru/upd/spbu/student/massenroll/"
+    { referer: "https://openedu.ru/upd/spbu/student/massenroll/" }
   ).then(async (res) => {
     if (res.status === 0) {
       res.results = (await res.res.json()).results;
@@ -39,7 +39,7 @@ async function formEnrollPayloadFromCourse(course, students) {
 
   res = await request(
     `https://openedu.ru/autocomplete/session/active?forward={"course":"${courseId}","university":"${university}"}`,
-    "https://openedu.ru/upd/spbu/student/massenroll/"
+    { referer: "https://openedu.ru/upd/spbu/student/massenroll/" }
   ).then(async (res) => {
     if (res.status === 0) {
       res.results = (await res.res.json()).results;

@@ -2,11 +2,11 @@ import fetch from "node-fetch";
 import parseString from "set-cookie-parser";
 import { defaultHeaders } from "./Config.js";
 
-function request(url, referer, method = "GET") {
+function request(url, additionalHeaders = {}, method = "GET") {
   return fetch(url, {
     headers: {
       ...defaultHeaders,
-      referer,
+      ...additionalHeaders,
     },
     method,
   })
