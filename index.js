@@ -3,6 +3,8 @@ import inviteStudents from "./massinvite/inviteStudents.js";
 import cors from "cors";
 import bodyParser from "body-parser";
 import enrollStudents from "./massenroll/enrollStudents.js";
+import unenrollStudents from "./massunenroll/unenrollStudents.js";
+
 import * as Yup from "yup";
 
 const app = express();
@@ -17,12 +19,35 @@ app.use(cors(corsOptions));
 
 app.get("/", (req, res) => {
   const resText =
-    "/invitestudents\n" +
-    "Example:\n" +
-    'fetch("hostname/invitestudents", {\n' +
+    "/invite\n" +
+    'fetch("hostname/invite", {\n' +
     'method: "POST"\n' +
     "  body: {\n" +
-    '    students: "user1;mail1@ma.ru;Name;LastName;;;\\r\\nuser2;mail2@MumX.ru;Name;LastName;;;\\r\\n"' +
+    '    students: "user1;mail1@ma.ru;Name;LastName;;;\\nuser2;mail2@MumX.ru;Name;LastName;;;\n"' +
+    "  }\n" +
+    "})\n" +
+    "\n" +
+    "/enroll\n" +
+    'fetch("hostname/enroll", {\n' +
+    'method: "POST"\n' +
+    "  body: {\n" +
+    "    course: {\n" +
+    "      tag: edu_tech,\n" +
+    "      session: fall_2020_spbu_spec\n" +
+    "    }\n" +
+    '    students: "user1;mail1@ma.ru;Name;LastName;;;\\nuser2;mail2@MumX.ru;Name;LastName;;;\n"' +
+    "  }\n" +
+    "})\n" +
+    "\n" +
+    "/unenroll\n" +
+    'fetch("hostname/unenroll", {\n' +
+    'method: "POST"\n' +
+    "  body: {\n" +
+    "    course: {\n" +
+    "      tag: edu_tech,\n" +
+    "      session: fall_2020_spbu_spec\n" +
+    "    }\n" +
+    '    students: "user1;mail1@ma.ru;Name;LastName;;;\\nuser2;mail2@MumX.ru;Name;LastName;;;\n"' +
     "  }\n" +
     "})\n";
   res.send(resText);
