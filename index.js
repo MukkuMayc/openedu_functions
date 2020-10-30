@@ -1,7 +1,7 @@
 import express from "express";
-import inviteStudents from "./massinvite/inviteStudents.js";
 import cors from "cors";
 import bodyParser from "body-parser";
+import inviteStudents from "./massinvite/inviteStudents.js";
 import enrollStudents from "./massenroll/enrollStudents.js";
 import unenrollStudents from "./massunenroll/unenrollStudents.js";
 import uploadCertificate from "./certificates/uploadCertificate.js";
@@ -63,20 +63,44 @@ app.get("/", (req, res) => {
 });
 
 app.post("/invite", async (req, res) => {
-  res.json(await inviteStudents(req.body?.students));
+  await inviteStudents(req.body?.students)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.status(500).send(err.toString());
+    });
 });
 
 app.post("/enroll", async (req, res) => {
-  res.json(await enrollStudents(req.body?.course, req.body?.students));
+  await enrollStudents(req.body?.course, req.body?.students)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.status(500).send(err.toString());
+    });
 });
 
 app.post("/unenroll", async (req, res) => {
-  res.json(await unenrollStudents(req.body?.course, req.body?.students));
+  await unenrollStudents(req.body?.course, req.body?.students)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.status(500).send(err.toString());
+    });
 });
 
 app.post("/certificate", async (req, res) => {
   const { email, session, grades, certificateURL } = req.body;
-  res.json(await uploadCertificate(email, session, grades, certificateURL));
+  await uploadCertificate(email, session, grades, certificateURL)
+    .then((result) => {
+      res.json(result);
+    })
+    .catch((err) => {
+      res.status(500).send(err.toString());
+    });
 });
 
 const port = process.env.PORT || 8080;
