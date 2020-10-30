@@ -1,10 +1,9 @@
-import { formUnenrollPayloadFromCourse } from "../massunenroll/unenrollPayload.js";
 import {
   formEnrollPayload,
   formEnrollPayloadFromCourse,
 } from "./enrollPayload.js";
 
-test("Form enroll payload from parameters", () => {
+test("Enrollment payload from parameters", () => {
   const payload =
     "-----------------------------myform\r\n" +
     'Content-Disposition: form-data; name="csrfmiddlewaretoken"\r\n' +
@@ -49,7 +48,7 @@ test("Form enroll payload from parameters", () => {
   ).toBe(payload);
 });
 
-test("Form enroll payload only from course and session", async () => {
+test("Enrollment payload only from course and session", () => {
   const payload =
     "-----------------------------myform\r\n" +
     'Content-Disposition: form-data; name="csrfmiddlewaretoken"\r\n' +
@@ -84,26 +83,28 @@ test("Form enroll payload only from course and session", async () => {
     "1\r\n" +
     "-----------------------------myform\r\n";
 
-  await formEnrollPayloadFromCourse(
-    { tag: "phylosophy", session: "fall_2020_spbu_spec" },
-    "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
-  ).then((res) => expect(res.payload).toBe(payload));
+  return expect(
+    formEnrollPayloadFromCourse(
+      { tag: "phylosophy", session: "fall_2020_spbu_spec" },
+      "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
+    )
+  ).resolves.toBe(payload);
 });
 
-test("Enroll payload from nonexistent course", async () => {
-  await formEnrollPayloadFromCourse(
-    { tag: "nonexistent_course", session: "fall_2020_spbu_spec" },
-    "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
-  ).then((res) => expect(res.message).toBe("Course was not found"));
+test("Enrollment payload from nonexistent course", () => {
+  return expect(
+    formEnrollPayloadFromCourse(
+      { tag: "nonexistent_course", session: "fall_2020_spbu_spec" },
+      "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
+    )
+  ).rejects.toThrow("Course was not found");
 });
 
-test("Enroll payload from nonexistent session", async () => {
-  await formEnrollPayloadFromCourse(
-    { tag: "phylosophy", session: "nonexistent_session" },
-    "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
-  ).then(
-    (res) =>
-      expect(res.status).toBe(2) ||
-      expect(res.message).toBe("Session was not found")
-  );
+test("Enrollment payload from nonexistent session", () => {
+  return expect(
+    formEnrollPayloadFromCourse(
+      { tag: "phylosophy", session: "nonexistent_session" },
+      "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
+    )
+  ).rejects.toThrow("Session was not found");
 });

@@ -9,34 +9,18 @@ function request(url, additionalHeaders = {}, method = "GET") {
       ...additionalHeaders,
     },
     method,
-  })
-    .then((res) => {
-      const authenticated = parseString(res.headers.raw()["set-cookie"])?.find(
-        (el) => el.name === "authenticated"
-      )?.value;
-      let out = {};
-      if (authenticated === 0 || authenticated === "0") {
-        out.status = 1;
-        out.message = "User is not authenticated";
-        return out;
-      }
-      if (res.status !== 200) {
-        out.status = 2;
-        out.message = `Request didn't succeed, status code is ${res.status}`;
-        return out;
-      }
-      out.status = 0;
-      out.message = "OK";
-      out.res = res;
-      return out;
-    })
-    .catch((err) => {
-      return {
-        status: 3,
-        message: "Some error happened",
-        error: err,
-      };
-    });
+  }).then((res) => {
+    const authenticated = parseString(res.headers.raw()["set-cookie"])?.find(
+      (el) => el.name === "authenticated"
+    )?.value;
+    if (authenticated === 0 || authenticated === "0") {
+      throw new Error("User is not authenticated");
+    }
+    if (res.status !== 200) {
+      throw new Error(`Request didn't succeed, status code is ${res.status}`);
+    }
+    return res;
+  });
 }
 
 export default request;

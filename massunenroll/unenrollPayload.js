@@ -17,64 +17,31 @@ async function formUnenrollPayloadFromCourse(course, students) {
   let res = await request(
     `https://openedu.ru/autocomplete/course/?q=${course.tag}&forward={"university":"${university}"}`,
     { referer: "https://openedu.ru/upd/spbu/student/massunenroll/" }
-  ).then(async (res) => {
-    if (res.status === 0) {
-      res.results = (await res.res.json()).results;
-    }
-    return res;
-  });
+  )
+    .then((res) => res.json())
+    .then((json) => json.results);
 
-  if (res.status !== 0) {
-    return res;
+  if (!(res?.length > 0)) {
+    throw new Error("Course was not found");
   }
 
-  if (!(res?.results?.length > 0)) {
-    return {
-      status: 1,
-      message: "Course was not found",
-    };
-  }
-
-  const courseId = res.results[0].id;
+  const courseId = res[0].id;
 
   res = await request(
     `https://openedu.ru/autocomplete/session/active?forward={"course":"${courseId}","university":"${university}"}`,
     { referer: "https://openedu.ru/upd/spbu/student/massunenroll/" }
-  ).then(async (res) => {
-    if (res.status === 0) {
-      res.results = (await res.res.json()).results;
-    }
-    return res;
-  });
+  )
+    .then((res) => res.json())
+    .then((json) => json.results);
 
-  if (res.status !== 0) {
-    return res;
-  }
-
-  const session = res.results.find((el) => el.text.includes(course.session))
-    ?.id;
+  const session = res.find((el) => el.text.includes(course.session))?.id;
   if (!session) {
-    return {
-      status: 2,
-      message: "Session was not found",
-    };
+    throw new Error("Session was not found");
   }
 
   const reason = "Why not";
 
-  res = {
-    status: 0,
-    message: "OK",
-    payload: formUnenrollPayload(
-      courseId,
-      session,
-      reason,
-      students,
-      university
-    ),
-  };
-
-  return res;
+  return formUnenrollPayload(courseId, session, reason, students, university);
 }
 
 export { formUnenrollPayload, formUnenrollPayloadFromCourse };
