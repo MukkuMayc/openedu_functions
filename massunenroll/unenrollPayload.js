@@ -16,7 +16,11 @@ async function formUnenrollPayloadFromCourse(course, students) {
   const university = 6;
   let res = await request(
     `https://openedu.ru/autocomplete/course/?q=${course.tag}&forward={"university":"${university}"}`,
-    { referer: "https://openedu.ru/upd/spbu/student/massunenroll/" }
+    {
+      additionalHeaders: {
+        referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
+      },
+    }
   )
     .then((res) => res.json())
     .then((json) => json.results);
@@ -29,7 +33,11 @@ async function formUnenrollPayloadFromCourse(course, students) {
 
   res = await request(
     `https://openedu.ru/autocomplete/session/active?forward={"course":"${courseId}","university":"${university}"}`,
-    { referer: "https://openedu.ru/upd/spbu/student/massunenroll/" }
+    {
+      additionalHeaders: {
+        referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
+      },
+    }
   )
     .then((res) => res.json())
     .then((json) => json.results);

@@ -2,13 +2,17 @@ import fetch from "node-fetch";
 import parseString from "set-cookie-parser";
 import { defaultHeaders } from "./Config.js";
 
-function request(url, additionalHeaders = {}, method = "GET") {
+function request(url, params) {
+  const method = params.method || "GET";
+  const body = params.body || null;
+  const additionalHeaders = params.additionalHeaders || null;
   return fetch(url, {
+    method,
     headers: {
       ...defaultHeaders,
       ...additionalHeaders,
     },
-    method,
+    body,
   }).then((res) => {
     const authenticated = parseString(res.headers.raw()["set-cookie"])?.find(
       (el) => el.name === "authenticated"
