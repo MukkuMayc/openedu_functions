@@ -4,7 +4,7 @@ import RequestFormPayload from "../RequestFormPayload.js";
 async function getStudentId(email, fullName, session) {
   return await request("https://openedu.ru/upd/spbu/students/certificates/", {
     method: "post",
-    // if email contains dot or dash, it'll not find student
+    // for some emails, it won't find student
     body: `search[value]=${email}&search[regex]=false&session=${session}`,
     additionalHeaders: {
       referer: "https://openedu.ru/upd/spbu/students/certificates",
@@ -32,7 +32,6 @@ async function getStudentId(email, fullName, session) {
             if (json.data.length === 0) {
               throw Error("Student was not found");
             }
-            console.log(json.data);
             if (json.data.length > 1) {
               console.warn("More than one student with same fullname");
               const st = json.data.find((el) => el[1] === email);
@@ -52,10 +51,46 @@ async function getStudentId(email, fullName, session) {
     });
 }
 
-async function uploadCertificate(email, fullName, session, grade, certUrl) {
+function getSessions(page = 1) {
+  return request(
+    `https://openedu.ru/autocomplete/session/strict?page=${page}&forward={"course":"169","university":"6","brief":true}`,
+    {
+      additionalHeaders: {
+        "X-CSRFToken":
+          "CfzgIcQGCza2uwIjqbh4iMgXDMqiYiAuBjvMS6g2ehaIKF52zrJ8ImVVTXbamw2i",
+
+        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+        referer: "https://openedu.ru/upd/spbu/students/certificates",
+      },
+    }
+  ).then((res) => res.json());
+}
+
+async function uploadCertificate(email, fullName, grade, certUrl) {
   const payload = new RequestFormPayload();
 
-  const id = await getStudentId(email, fullName, session);
+  let id;
+  for (let page = 1; page < 100; ++page) {
+    let sessions = await getSessions(page);
+    for (const session of sessions.results) {
+      try {
+        id = await getStudentId(email, fullName, session.id);
+        console.log(`Found student ${email} at ${session.text}`);
+        break;
+      } catch (err) {
+        continue;
+      }
+    }
+    if (id || !sessions?.pagination?.more) {
+      break;
+    }
+  }
+
+  if (!id) {
+    console.log(`Student ${email} was not found`);
+    throw Error("Student was not found");
+  }
+
   payload.addField("participant_id", id);
   payload.addField("grade", grade);
   payload.addField("cert_type", "url");
