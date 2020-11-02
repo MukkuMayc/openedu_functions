@@ -35,6 +35,7 @@ async function massupload() {
           session: 306,
           grade: parseInt(item.MarkValue),
           certificateURL: item.QR,
+          course_name: item.CourseFullName,
         }),
       }).then((res) => {
         if (res.status === 200) {

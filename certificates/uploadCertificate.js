@@ -66,13 +66,37 @@ function getSessions(page = 1) {
   ).then((res) => res.json());
 }
 
-async function uploadCertificate(email, fullName, grade, certUrl) {
+async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
   const payload = new RequestFormPayload();
 
   let id;
   for (let page = 1; page < 100; ++page) {
-    let sessions = await getSessions(page);
-    for (const session of sessions.results) {
+    let sessions = (await getSessions(page)).results;
+    const regDate = /(\d{2}.\d{2}.\d{4})/g;
+    let sessionWithSameDate = sessions.find((session) =>
+      courseName
+        .match(regDate)
+        .find((date) => date === session.text.match(regDate)[0])
+    );
+
+    if (sessionWithSameDate) {
+      try {
+        id = await getStudentId(email, fullName, sessionWithSameDate.id);
+        console.log(`Found student ${email} at ${sessionWithSameDate.text}`);
+      } catch (err) {}
+    }
+
+    if (id) break;
+    console.warn(
+      `Student ${email} was not found in session with same date, trying to bruteforce sessions`
+    );
+    let deleted = sessions.splice(
+      sessions.findIndex((el) => el.id === sessionWithSameDate.id),
+      1
+    );
+    console.log("delete ", deleted);
+
+    for (const session of sessions) {
       try {
         id = await getStudentId(email, fullName, session.id);
         console.log(`Found student ${email} at ${session.text}`);
@@ -81,6 +105,7 @@ async function uploadCertificate(email, fullName, grade, certUrl) {
         continue;
       }
     }
+
     if (id || !sessions?.pagination?.more) {
       break;
     }

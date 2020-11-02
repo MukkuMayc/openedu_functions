@@ -93,8 +93,8 @@ app.post("/unenroll", async (req, res) => {
 });
 
 app.post("/certificate", async (req, res) => {
-  const { email, full_name, grade, certificateURL } = req.body;
-  await uploadCertificate(email, full_name, grade, certificateURL)
+  const { email, full_name, grade, certificateURL, course_name } = req.body;
+  await uploadCertificate(email, full_name, grade, certificateURL, course_name)
     .then((result) => {
       res.json(result);
     })
