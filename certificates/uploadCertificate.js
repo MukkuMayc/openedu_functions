@@ -1,5 +1,7 @@
 import request from "../request.js";
 import RequestFormPayload from "../RequestFormPayload.js";
+import findCourse from "../common/findCourse.js";
+import listSessionsPage from "../common/listSessionsPage.js";
 
 async function getStudentId(email, fullName, session) {
   return await request("https://openedu.ru/upd/spbu/students/certificates/", {
@@ -9,7 +11,7 @@ async function getStudentId(email, fullName, session) {
     additionalHeaders: {
       referer: "https://openedu.ru/upd/spbu/students/certificates",
       "X-CSRFToken":
-        "CfzgIcQGCza2uwIjqbh4iMgXDMqiYiAuBjvMS6g2ehaIKF52zrJ8ImVVTXbamw2i",
+        "BvfD72qHE2xgHppmNbBTGwA1mSyKLSuGylASba5mSr4Q3pEMobX5KYnpo1ZBJp1e",
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
   })
@@ -23,7 +25,7 @@ async function getStudentId(email, fullName, session) {
           additionalHeaders: {
             referer: "https://openedu.ru/upd/spbu/students/certificates",
             "X-CSRFToken":
-              "CfzgIcQGCza2uwIjqbh4iMgXDMqiYiAuBjvMS6g2ehaIKF52zrJ8ImVVTXbamw2i",
+              "BvfD72qHE2xgHppmNbBTGwA1mSyKLSuGylASba5mSr4Q3pEMobX5KYnpo1ZBJp1e",
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
           },
         })
@@ -51,72 +53,69 @@ async function getStudentId(email, fullName, session) {
     });
 }
 
-function getSessions(page = 1) {
-  return request(
-    `https://openedu.ru/autocomplete/session/strict?page=${page}&forward={"course":"169","university":"6","brief":true}`,
-    {
-      additionalHeaders: {
-        "X-CSRFToken":
-          "CfzgIcQGCza2uwIjqbh4iMgXDMqiYiAuBjvMS6g2ehaIKF52zrJ8ImVVTXbamw2i",
-
-        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-        referer: "https://openedu.ru/upd/spbu/students/certificates",
-      },
-    }
-  ).then((res) => res.json());
-}
-
+// Important! The courseName parameter have to match the following regexp:
+// /\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/
 async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
-  const payload = new RequestFormPayload();
-
-  let id;
-  for (let page = 1; page < 100; ++page) {
-    let sessions = (await getSessions(page)).results;
-    const regDate = /(\d{2}.\d{2}.\d{4})/g;
+  const courseNormalName = courseName.match(
+    /\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/
+  )[1];
+  const courseId = (await findCourse(courseNormalName)).id;
+  const regDate = /\d{2}.\d{2}.\d{4}/g;
+  const courseDates = courseName.match(regDate);
+  let studentId;
+  let page = 0;
+  let morePages = false;
+  do {
+    let sessions = await listSessionsPage(courseId, ++page).then((res) => {
+      morePages = res.pagination.more;
+      return res.results;
+    });
     let sessionWithSameDate = sessions.find((session) =>
-      courseName
-        .match(regDate)
-        .find((date) => date === session.text.match(regDate)[0])
+      courseDates.find((date) => date === session.text.match(regDate)[0])
     );
 
     if (sessionWithSameDate) {
       try {
-        id = await getStudentId(email, fullName, sessionWithSameDate.id);
+        studentId = await getStudentId(email, fullName, sessionWithSameDate.id);
         console.log(`Found student ${email} at ${sessionWithSameDate.text}`);
-      } catch (err) {}
+      } catch (err) {
+        console.log(err);
+      }
     }
 
-    if (id) break;
-    console.warn(
-      `Student ${email} was not found in session with same date, trying to bruteforce sessions`
-    );
-    let deleted = sessions.splice(
-      sessions.findIndex((el) => el.id === sessionWithSameDate.id),
-      1
-    );
-    console.log("delete ", deleted);
+    if (studentId) break;
+    if (sessionWithSameDate) {
+      console.warn(
+        `Student ${email} was not found in session with same date, trying to bruteforce sessions`
+      );
+      sessions.splice(
+        sessions.findIndex((el) => el.id === sessionWithSameDate.id),
+        1
+      );
+    } else {
+      console.warn(
+        `Session with same date was not found, trying to bruteforce sessions`
+      );
+    }
 
     for (const session of sessions) {
       try {
-        id = await getStudentId(email, fullName, session.id);
+        studentId = await getStudentId(email, fullName, session.id);
         console.log(`Found student ${email} at ${session.text}`);
         break;
       } catch (err) {
         continue;
       }
     }
+  } while (!studentId && morePages);
 
-    if (id || !sessions?.pagination?.more) {
-      break;
-    }
-  }
-
-  if (!id) {
+  if (!studentId) {
     console.log(`Student ${email} was not found`);
-    throw Error("Student was not found");
+    throw Error(`Student ${email} was not found`);
   }
 
-  payload.addField("participant_id", id);
+  const payload = new RequestFormPayload();
+  payload.addField("participant_id", studentId);
   payload.addField("grade", grade);
   payload.addField("cert_type", "url");
   payload.addField("certificate_url", certUrl, false, true);
@@ -138,3 +137,8 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
 }
 
 export default uploadCertificate;
+
+// if (true) {
+//   let courseName = "Публичная дипломатия США";
+//   findCourse(courseName).then((res) => console.log(res));
+// }

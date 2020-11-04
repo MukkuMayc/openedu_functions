@@ -1,13 +1,13 @@
 import csv from "csv-parser";
 import fs from "fs";
 import fetch from "node-fetch";
-import { exit } from "process";
 
 let arr = [];
 
-fs.createReadStream("data.csv")
+fs.createReadStream("data1.csv")
   .pipe(csv())
   .on("data", (row) => {
+    console.log(row);
     arr.push(row);
   })
   .on("end", () => {
