@@ -8,7 +8,7 @@ function queryStudentId(query, session) {
     method: "post",
     // for some emails, it won't find student
     body: `search[value]=${query}&search[regex]=false&session=${session}`,
-    additionalHeaders: {
+    headers: {
       referer: "https://openedu.ru/upd/spbu/students/certificates",
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
@@ -47,7 +47,7 @@ async function getStudentId(email, fullName, session) {
 function requestStudents(session, start = 0) {
   return request("https://openedu.ru/upd/spbu/students/certificates/", {
     method: "post",
-    additionalHeaders: {
+    headers: {
       referer: "https://openedu.ru/upd/spbu/students/certificates",
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
@@ -138,7 +138,7 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
     "https://openedu.ru/upd/spbu/students/certificates/data",
     {
       method: "post",
-      additionalHeaders: {
+      headers: {
         referer: "https://openedu.ru/upd/spbu/students/certificates",
         "Content-Type":
           "multipart/form-data; boundary=---------------------------myform",

@@ -11,7 +11,7 @@ async function findCourse(title, university = 6) {
         title
       )}&forward={"university":"${university}"}`,
       {
-        additionalHeaders: {
+        headers: {
           referer: "https://openedu.ru/upd/spbu/student/massenroll/",
         },
       }

@@ -17,7 +17,7 @@ async function formUnenrollPayloadFromCourse(course, students) {
   let res = await request(
     `https://openedu.ru/autocomplete/course/?q=${course.tag}&forward={"university":"${university}"}`,
     {
-      additionalHeaders: {
+      headers: {
         referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
       },
     }
@@ -34,7 +34,7 @@ async function formUnenrollPayloadFromCourse(course, students) {
   res = await request(
     `https://openedu.ru/autocomplete/session/active?forward={"course":"${courseId}","university":"${university}"}`,
     {
-      additionalHeaders: {
+      headers: {
         referer: "https://openedu.ru/upd/spbu/student/massunenroll/",
       },
     }

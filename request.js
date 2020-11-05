@@ -5,7 +5,7 @@ import { defaultHeaders } from "./Config.js";
 function request(url, params) {
   const method = params.method || "GET";
   const body = params.body || null;
-  const additionalHeaders = params.additionalHeaders || null;
+  const additionalHeaders = params.headers || null;
 
   return fetch(url, {
     method,
