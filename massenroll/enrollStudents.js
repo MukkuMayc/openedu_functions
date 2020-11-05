@@ -1,13 +1,11 @@
-import fetch from "node-fetch";
-import { defaultHeaders } from "../Config.js";
+import request from "../request.js";
 import { formEnrollPayloadFromCourse } from "./enrollPayload.js";
 
 async function enrollStudents(course, students) {
   const res = await formEnrollPayloadFromCourse(course, students).then(
     (res) => {
-      return fetch("https://openedu.ru/upd/spbu/student/massenroll/", {
+      return request("https://openedu.ru/upd/spbu/student/massenroll/", {
         headers: {
-          ...defaultHeaders,
           "Content-Type":
             "multipart/form-data; boundary=---------------------------myform",
           referer: "https://openedu.ru/upd/spbu/student/massenroll/",

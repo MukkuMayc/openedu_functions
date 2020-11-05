@@ -1,12 +1,10 @@
-import fetch from "node-fetch";
-import { defaultHeaders } from "../Config.js";
 import formInvitePayload from "./invitePayload.js";
 import parseString from "set-cookie-parser";
+import request from "../request.js";
 
 async function inviteStudents(students) {
-  return await fetch("https://openedu.ru/upd/spbu/student/massinvite/", {
+  return await request("https://openedu.ru/upd/spbu/student/massinvite/", {
     headers: {
-      ...defaultHeaders,
       "Content-Type":
         "multipart/form-data; boundary=---------------------------myform",
       referer: "https://openedu.ru/upd/spbu/student/massinvite/",
