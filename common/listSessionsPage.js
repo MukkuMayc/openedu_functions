@@ -1,4 +1,4 @@
-import request from "../request.js";
+import request from "./request.js";
 
 function listSessionsPage(courseId, page = 1) {
   return request(
