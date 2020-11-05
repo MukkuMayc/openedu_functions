@@ -19,7 +19,10 @@ app.get("/", (req, res) => {
   const resText =
     "/invite\n" +
     'fetch("hostname/invite", {\n' +
-    'method: "POST"\n' +
+    '  method: "POST"\n' +
+    "  headers: {\n" +
+    '    "Content-Type": "application/json; charset=UTF-8",\n' +
+    "  },\n" +
     "  body: {\n" +
     '    students: "user1;mail1@ma.ru;Name;LastName;;;\\nuser2;mail2@MumX.ru;Name;LastName;;;\n"' +
     "  }\n" +
@@ -27,7 +30,10 @@ app.get("/", (req, res) => {
     "\n" +
     "/enroll\n" +
     'fetch("hostname/enroll", {\n' +
-    'method: "POST"\n' +
+    '  method: "POST"\n' +
+    "  headers: {\n" +
+    '    "Content-Type": "application/json; charset=UTF-8",\n' +
+    "  },\n" +
     "  body: {\n" +
     "    course: {\n" +
     '      tag: "edu_tech",\n' +
@@ -39,7 +45,10 @@ app.get("/", (req, res) => {
     "\n" +
     "/unenroll\n" +
     'fetch("hostname/unenroll", {\n' +
-    'method: "POST"\n' +
+    '  method: "POST"\n' +
+    "  headers: {\n" +
+    '    "Content-Type": "application/json; charset=UTF-8",\n' +
+    "  },\n" +
     "  body: {\n" +
     "    course: {\n" +
     '      tag: "edu_tech",\n' +
@@ -51,12 +60,20 @@ app.get("/", (req, res) => {
     "\n" +
     "/certificate\n" +
     'fetch("hostname/certificate", {\n' +
-    'method: "POST"\n' +
+    '  method: "POST"\n' +
+    "  headers: {\n" +
+    '    "Content-Type": "application/json; charset=UTF-8",\n' +
+    "  },\n" +
     "  body: {\n" +
     '    email: "me@example.com"\n' +
-    '    session: "fall_2020_spbu_spec"\n' +
+    "    full_name: {\n" +
+    "      name: Name,\n" +
+    "      surname: Surname,\n" +
+    "      second_name: Second,\n" +
+    "    }\n" +
     "    grade: 95\n" +
     '    certificateURL: "http://www.africau.edu/images/default/sample.pdf"\n' +
+    "    course_name: 2017-006-001 Базы данных (15.02.2017 - 20.05.2017)" +
     "  }\n" +
     "})\n";
   res.send(resText);
