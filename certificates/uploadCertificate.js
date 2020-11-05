@@ -11,7 +11,7 @@ async function getStudentId(email, fullName, session) {
     additionalHeaders: {
       referer: "https://openedu.ru/upd/spbu/students/certificates",
       "X-CSRFToken":
-        "BvfD72qHE2xgHppmNbBTGwA1mSyKLSuGylASba5mSr4Q3pEMobX5KYnpo1ZBJp1e",
+        "CfzgIcQGCza2uwIjqbh4iMgXDMqiYiAuBjvMS6g2ehaIKF52zrJ8ImVVTXbamw2i",
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
   })
@@ -25,7 +25,7 @@ async function getStudentId(email, fullName, session) {
           additionalHeaders: {
             referer: "https://openedu.ru/upd/spbu/students/certificates",
             "X-CSRFToken":
-              "BvfD72qHE2xgHppmNbBTGwA1mSyKLSuGylASba5mSr4Q3pEMobX5KYnpo1ZBJp1e",
+              "CfzgIcQGCza2uwIjqbh4iMgXDMqiYiAuBjvMS6g2ehaIKF52zrJ8ImVVTXbamw2i",
             "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
           },
         })
@@ -59,7 +59,10 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
   const courseNormalName = courseName.match(
     /\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/
   )[1];
-  const courseId = (await findCourse(courseNormalName)).id;
+  let course = await findCourse(courseNormalName);
+  if (!course) throw Error(`Course "${courseNormalName}" was not found`);
+
+  const courseId = course.id;
   const regDate = /\d{2}.\d{2}.\d{4}/g;
   const courseDates = courseName.match(regDate);
   let studentId;
@@ -78,9 +81,7 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
       try {
         studentId = await getStudentId(email, fullName, sessionWithSameDate.id);
         console.log(`Found student ${email} at ${sessionWithSameDate.text}`);
-      } catch (err) {
-        console.log(err);
-      }
+      } catch (err) {}
     }
 
     if (studentId) break;
@@ -137,8 +138,3 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
 }
 
 export default uploadCertificate;
-
-// if (true) {
-//   let courseName = "Публичная дипломатия США";
-//   findCourse(courseName).then((res) => console.log(res));
-// }
