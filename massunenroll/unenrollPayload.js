@@ -1,5 +1,5 @@
-import RequestFormPayload from "../RequestFormPayload.js";
-import request from "../request.js";
+import RequestFormPayload from "../common/RequestFormPayload.js";
+import request from "../common/request.js";
 
 function formUnenrollPayload(course, session, reason, students, university) {
   let payload = new RequestFormPayload();

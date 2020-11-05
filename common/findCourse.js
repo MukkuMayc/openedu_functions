@@ -1,4 +1,4 @@
-import request from "../request.js";
+import request from "./request.js";
 
 async function findCourse(title, university = 6) {
   if (!title) throw Error("Title is empty");

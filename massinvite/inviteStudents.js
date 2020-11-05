@@ -1,6 +1,6 @@
 import formInvitePayload from "./invitePayload.js";
 import parseString from "set-cookie-parser";
-import request from "../request.js";
+import request from "../common/request.js";
 
 async function inviteStudents(students) {
   return await request("https://openedu.ru/upd/spbu/student/massinvite/", {

@@ -1,4 +1,4 @@
-import RequestFormPayload from "../RequestFormPayload.js";
+import RequestFormPayload from "../common/RequestFormPayload.js";
 
 function formInvitePayload(students) {
   let payload = new RequestFormPayload();

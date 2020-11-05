@@ -1,4 +1,4 @@
-import request from "../request.js";
+import request from "../common/request.js";
 import { formEnrollPayloadFromCourse } from "./enrollPayload.js";
 
 async function enrollStudents(course, students) {
