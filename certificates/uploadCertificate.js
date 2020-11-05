@@ -10,8 +10,6 @@ function queryStudentId(query, session) {
     body: `search[value]=${query}&search[regex]=false&session=${session}`,
     additionalHeaders: {
       referer: "https://openedu.ru/upd/spbu/students/certificates",
-      "X-CSRFToken":
-        "CfzgIcQGCza2uwIjqbh4iMgXDMqiYiAuBjvMS6g2ehaIKF52zrJ8ImVVTXbamw2i",
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
   });
@@ -51,8 +49,6 @@ function requestStudents(session, start = 0) {
     method: "post",
     additionalHeaders: {
       referer: "https://openedu.ru/upd/spbu/students/certificates",
-      "X-CSRFToken":
-        "CfzgIcQGCza2uwIjqbh4iMgXDMqiYiAuBjvMS6g2ehaIKF52zrJ8ImVVTXbamw2i",
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
     body: `start=${start}&length=100&session=${session}`,
@@ -144,8 +140,6 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
       method: "post",
       additionalHeaders: {
         referer: "https://openedu.ru/upd/spbu/students/certificates",
-        "X-CSRFToken":
-          "CfzgIcQGCza2uwIjqbh4iMgXDMqiYiAuBjvMS6g2ehaIKF52zrJ8ImVVTXbamw2i",
         "Content-Type":
           "multipart/form-data; boundary=---------------------------myform",
       },
