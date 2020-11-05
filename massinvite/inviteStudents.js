@@ -2,6 +2,11 @@ import formInvitePayload from "./invitePayload.js";
 import parseString from "set-cookie-parser";
 import request from "../common/request.js";
 
+/**
+ *  Make an invite request
+ * @param   {string}          students CSV file with students. Required columns: username; email; last_name; first_name. Optional: second_name; student_id; group.
+ * @returns {Promise<string>}          Message from server
+ */
 async function inviteStudents(students) {
   return await request("https://openedu.ru/upd/spbu/student/massinvite/", {
     headers: {

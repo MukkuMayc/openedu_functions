@@ -3,11 +3,17 @@ import RequestFormPayload from "../common/RequestFormPayload.js";
 import findCourse from "../common/findCourse.js";
 import listSessionsPage from "../common/listSessionsPage.js";
 
-function queryStudentId(query, session) {
+/**
+ * Query student whose parameters contain query as substring;
+ * @param   {string} substr  Email or name of student
+ * @param   {number} session Session number code
+ * @returns {}
+ */
+function queryStudentId(substr, session) {
   return request("https://openedu.ru/upd/spbu/students/certificates/", {
     method: "post",
     // for some emails, it won't find student
-    body: `search[value]=${query}&search[regex]=false&session=${session}`,
+    body: `search[value]=${substr}&search[regex]=false&session=${session}`,
     headers: {
       referer: "https://openedu.ru/upd/spbu/students/certificates",
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -15,6 +21,17 @@ function queryStudentId(query, session) {
   });
 }
 
+/**
+ * Make different requests to find student's id
+ * @param   {string}               email    Student's email
+ * @param   {{
+              name: string;
+              surname: string;
+              second_name: string;
+            }}                     fullName Full name of student
+ * @param   {number}               session  Session's number code
+ * @returns {Promise<number>}               Student's id
+ */
 async function getStudentId(email, fullName, session) {
   const handleQueryResult = (email, res) => {
     if (!(res.data.length > 0)) {
@@ -44,6 +61,16 @@ async function getStudentId(email, fullName, session) {
   return id;
 }
 
+/**
+ * Request list of students
+ * @param   {number}         session Session's number code
+ * @param   {number}         start   Student's number from that we start
+ * @returns {{
+ *  data: string[][];
+ *  recordsTotal: number;
+ *  recordsFiltered: number;
+ * }}                                data: list of students, recordsTotal: how many students in session, recordsFiltered: in that context is the same as recordsTotal.
+ */
 function requestStudents(session, start = 0) {
   return request("https://openedu.ru/upd/spbu/students/certificates/", {
     method: "post",
@@ -55,6 +82,12 @@ function requestStudents(session, start = 0) {
   }).then((res) => res.json());
 }
 
+/**
+ * Brute force all students to find one with same email and returns id
+ * @param   {number}          email   Student's email
+ * @param   {number}          session Session's number code
+ * @returns {Promise<number>}         Student's id
+ */
 async function getStudentIdBF(email, session) {
   let st = null;
   let students = await requestStudents(session);
@@ -71,8 +104,21 @@ async function getStudentIdBF(email, session) {
   return st && st[5];
 }
 
-// Important! The courseName parameter have to match the following regexp:
-// /\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/
+/**
+ * Upload certificate for student
+ * @param  {string}     email      email
+ * @param {{
+ * name: string;
+ * surname: string;
+ * second_name: string;
+ * }}                   fullName   Full name of student
+ * @param  {number}     grade      Student's grade
+ * @param  {string}     certUrl    Certificate's url
+ * @param  {string}     courseName Name of course. \
+ *                                 Important! The courseName parameter have to match the following regexp:
+ *                                 `/\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/`
+ * @returns {Promise<string>}      "Success!" in case of success and Error in another
+ */
 async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
   const [_, courseNormalName, ...courseDates] = courseName.match(
     /\d{4}-\d{3}-\d{3} (.*) \((\d{2}.\d{2}.\d{4}) - (\d{2}.\d{2}.\d{4})\)/
