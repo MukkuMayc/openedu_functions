@@ -4,12 +4,17 @@ import findCourse from "../common/findCourse.js";
 import listSessionsPage from "../common/listSessionsPage.js";
 
 /**
- * Query student whose parameters contain query as substring;
- * @param   {string} substr  Email or name of student
- * @param   {number} session Session number code
- * @returns {}
+ * Returns students whose parameters contain query as substring;
+ * @param   {string}         substr  Email or name of student
+ * @param   {number}         session Session number code
+ * @returns {{
+ *  data: string[][];
+ *  recordsTotal: number;
+ *  recordsFiltered: number;
+ *  draw: number;
+ * }}                                data: list of students, recordsTotal: how many students in session.
  */
-function queryStudentId(substr, session) {
+function studentsSelector(substr, session) {
   return request("https://openedu.ru/upd/spbu/students/certificates/", {
     method: "post",
     // for some emails, it won't find student
@@ -18,7 +23,7 @@ function queryStudentId(substr, session) {
       referer: "https://openedu.ru/upd/spbu/students/certificates",
       "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
     },
-  });
+  }).then((res) => res.json());
 }
 
 /**
@@ -33,27 +38,21 @@ function queryStudentId(substr, session) {
  * @returns {Promise<number>}               Student's id
  */
 async function getStudentId(email, fullName, session) {
-  const handleQueryResult = (email, res) => {
-    if (!(res.data.length > 0)) {
-      return null;
-    }
-    if (res.data.length === 1) return res.data[0][5];
+  const handleResult = (email, res) => {
+    if (!(res.data.length > 0)) return null;
     return res.data.find((el) => el[1] === email)[5];
   };
 
-  let id = await queryStudentId(email, session)
-    .then((res) => res.json())
-    .then((json) => handleQueryResult(email, json));
-  if (id) return id;
+  let id = await studentsSelector(email, session).then((res) =>
+    handleResult(email, res)
+  );
 
   id =
     id ||
-    (await queryStudentId(
+    (await studentsSelector(
       `${fullName.name} ${fullName.surname} ${fullName.second_name}`,
       session
-    )
-      .then((res) => res.json())
-      .then((json) => handleQueryResult(email, json)));
+    ).then((res) => handleResult(email, res)));
 
   id = id || (await getStudentIdBF(email, session));
 
@@ -69,9 +68,9 @@ async function getStudentId(email, fullName, session) {
  *  data: string[][];
  *  recordsTotal: number;
  *  recordsFiltered: number;
- * }}                                data: list of students, recordsTotal: how many students in session, recordsFiltered: in that context is the same as recordsTotal.
+ * }}                                data: list of students, recordsTotal: how many students in session.
  */
-function requestStudents(session, start = 0) {
+function getStudents(session, start = 0) {
   return request("https://openedu.ru/upd/spbu/students/certificates/", {
     method: "post",
     headers: {
@@ -90,13 +89,13 @@ function requestStudents(session, start = 0) {
  */
 async function getStudentIdBF(email, session) {
   let st = null;
-  let students = await requestStudents(session);
+  let students = await getStudents(session);
   const total = students.recordsTotal;
   students = students.data;
   st = students.find((st) => st[1] === email);
   if (!st) {
     for (let i = 100; i < total; i += 100) {
-      students = (await requestStudents(session, i)).data;
+      students = (await getStudents(session, i)).data;
       st = students.find((st) => st[1] === email);
       if (st) break;
     }
@@ -135,6 +134,7 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
       morePages = res.pagination.more;
       return res.results;
     });
+
     let sessionWithSameDate = sessions.find((session) =>
       courseDates.find((d) => d === session.text.match(/\d{2}.\d{2}.\d{4}/g)[0])
     );
@@ -149,18 +149,18 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
       } catch (err) {
         if (err.toString() !== "Error: Student was not found") throw err;
       }
-    }
-
-    sessionWithSameDate &&
       sessions.splice(
         sessions.findIndex((el) => el.id === sessionWithSameDate.id),
         1
       );
+    }
 
     for (const session of sessions) {
       try {
         studentId = await getStudentId(email, fullName, session.id);
-        console.log(`Found student ${email} at ${session.text}`);
+        console.log(
+          `Found student ${email} at "${courseNormalName}", "${session.text}"`
+        );
         break;
       } catch (err) {
         if (err.toString() !== "Error: Student was not found") throw err;
