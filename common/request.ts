@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+import fetch, { Response as NodeResponse } from "node-fetch";
 import parseString from "set-cookie-parser";
 
 const defaultHeaders = {
@@ -9,24 +9,23 @@ const defaultHeaders = {
 
 /**
  * Wrapper of `fetch` function, add required headers and cookies, handle some errors
- * @param {string}              url
- * @param {string}              params Parameters of fetch()
- * @returns {Promise<Response>}
+ * @param url
+ * @param params Parameters of fetch()
  */
-async function request(url, params) {
+async function request(url: string, params: any): Promise<NodeResponse> {
   const { headers, ...others } = params;
 
   const res = await fetch(url, {
     headers: {
-      ...defaultHeaders,
       ...headers,
+      ...defaultHeaders,
     },
     ...others,
   });
   const authenticated = parseString(res.headers.raw()["set-cookie"])?.find(
-    (el) => el.name === "authenticated"
+    (el: { name: string }) => el.name === "authenticated"
   )?.value;
-  if (authenticated === 0 || authenticated === "0") {
+  if (authenticated === "0") {
     throw new Error("User is not authenticated");
   }
   if (!res.ok) {

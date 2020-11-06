@@ -3,14 +3,20 @@ import request from "../common/request.js";
 
 /**
  * Form payload for unenroll request
- * @param   {number} course   Course id
- * @param   {number} session  Session id
- * @param   {string} reason   Reason for unenrolling
- * @param   {string} students Students in CSV format
- * @param   {number} univer   University code, SPbU is 6
- * @returns {string}          Payload for unenroll request
+ * @param course   Course id
+ * @param session  Session id
+ * @param reason   Reason for unenrolling
+ * @param students Students in CSV format
+ * @param univer   University code, SPbU is 6
+ * @returns        Payload for unenroll request
  */
-function formUnenrollPayload(course, session, reason, students, univer = 6) {
+function formUnenrollPayload(
+  course: number,
+  session: number,
+  reason: string,
+  students: string,
+  univer = 6
+): string {
   let payload = new RequestFormPayload();
   payload.addField("course", course);
   payload.addField("session", session);
@@ -30,7 +36,13 @@ function formUnenrollPayload(course, session, reason, students, univer = 6) {
  * @param   {string}            students Students to unenroll in CSV format. Only required field: email
  * @returns {Promise<string>}            Payload for unenroll request
  */
-async function formUnenrollPayloadFromCourse(course, students) {
+async function formUnenrollPayloadFromCourse(
+  course: {
+    tag: string;
+    session: string;
+  },
+  students: string
+): Promise<string> {
   const university = 6;
   let res = await request(
     `https://openedu.ru/autocomplete/course/?q=${course.tag}&forward={"university":"${university}"}`,
@@ -60,7 +72,9 @@ async function formUnenrollPayloadFromCourse(course, students) {
     .then((res) => res.json())
     .then((json) => json.results);
 
-  const session = res.find((el) => el.text.includes(course.session))?.id;
+  const session = res.find((el: { id: number; text: string }) =>
+    el.text.includes(course.session)
+  )?.id;
   if (!session) {
     throw new Error("Session was not found");
   }

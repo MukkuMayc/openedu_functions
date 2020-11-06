@@ -5,21 +5,21 @@ import getStudentId from "./getStudentId.js";
 
 /**
  * Upload certificate for student
- * @param  {string}     email      Email
- * @param {{
- * name: string;
- * surname: string;
- * second_name: string;
- * }}                   fullName   Full name of student
- * @param  {number}     grade      Student's grade
- * @param  {string}     certUrl    Certificate's url
- * @param  {string}     courseName Name of course. \
- *                                 Important! The courseName parameter have to match the following regexp:
- *                                 `/\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/`
- * @returns {Promise<string>}      "Success!" in case of success and Error in another
+ * @param email      Email
+ * @param fullName   Full name of student
+ * @param grade      Student's grade
+ * @param certUrl    Certificate's url
+ * @param courseName Name of course. \
+ *                   Important! The courseName parameter have to match the following regexp:
+ *                   `/\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/`
+ * @returns "Success!" in case of success and Error in another
  */
-async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
-  const [_, courseNormalName, ...courseDates] = courseName.match(
+async function uploadCertificate(email: string, fullName: {
+  name: string;
+  surname: string;
+  second_name: string;
+}, grade: number, certUrl: string, courseName: string): Promise<string> {
+  const [, courseNormalName, ...courseDates] = courseName.match(
     /\d{4}-\d{3}-\d{3} (.*) \((\d{2}.\d{2}.\d{4}) - (\d{2}.\d{2}.\d{4})\)/
   );
   let course = await findCourse(courseNormalName);
@@ -35,7 +35,7 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
     courseDates
   );
 
-  if (!studentId) {
+  if (studentId === null) {
     console.log(`Student ${email} was not found`);
     throw Error(`Student ${email} was not found`);
   }

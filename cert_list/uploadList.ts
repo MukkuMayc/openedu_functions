@@ -2,21 +2,30 @@ import csv from "csv-parser";
 import fs from "fs";
 import fetch from "node-fetch";
 
-let arr = [];
+interface CSVField {
+  Email: string;
+  Name: string;
+  Surname: string;
+  SecondName: string;
+  MarkValue: string;
+  QR: string;
+  CourseFullName: string;
+}
 
-fs.createReadStream("data1.csv")
+let arr: CSVField[] = [];
+
+fs.createReadStream("03_11_cert.csv")
   .pipe(csv())
   .on("data", (row) => {
-    console.log(row);
     arr.push(row);
   })
   .on("end", () => {
     console.log("CSV file successfully processed");
     console.log("Loaded", arr.length, "users");
-    massupload();
+    massupload(arr);
   });
 
-async function massupload() {
+async function massupload(arr: CSVField[]) {
   for (const item of arr) {
     console.log("Upload certificate for", item.Email);
     console.log(

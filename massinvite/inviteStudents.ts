@@ -4,10 +4,10 @@ import request from "../common/request.js";
 
 /**
  *  Make an invite request
- * @param   {string}          students CSV file with students. Required columns: username; email; last_name; first_name. Optional: second_name; student_id; group.
- * @returns {Promise<string>}          Message from server
+ * @param students CSV file with students. Required columns: username; email; last_name; first_name. Optional: second_name; student_id; group.
+ * @returns Message from server
  */
-async function inviteStudents(students) {
+async function inviteStudents(students: string): Promise<string> {
   return await request("https://openedu.ru/upd/spbu/student/massinvite/", {
     headers: {
       "Content-Type":

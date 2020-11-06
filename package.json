@@ -4,11 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jest --setupFiles dotenv/config"
+    "test": "jest --setupFiles dotenv/config",
+    "tsc": "tsc",
+    "build": "tsc",
+    "server": "node -r dotenv/config server.js"
   },
   "author": "",
   "license": "ISC",
-  "type": "module",
   "dependencies": {
     "cors": "^2.8.5",
     "csv-parser": "^2.3.3",
@@ -20,6 +22,11 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-modules-commonjs": "^7.12.1",
-    "jest": "^26.6.1"
+    "@types/cors": "^2.8.8",
+    "@types/express": "^4.17.8",
+    "@types/node-fetch": "^2.5.7",
+    "@types/set-cookie-parser": "^2.4.0",
+    "jest": "^26.6.1",
+    "typescript": "^4.0.5"
   }
 }

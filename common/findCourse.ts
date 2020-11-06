@@ -1,15 +1,15 @@
-import request from "./request.js";
+import request from "./request";
 
 /**
  * Find course by title
- * @param {string} title      Course title
- * @param {number} university University code, SPbU is 6
- * @returns {Promise<{
- * id: string;
- * text: string;
- * }>}                        id - course id, text - title in another format
+ * @param title      Course title
+ * @param university University code, SPbU is 6
+ * @returns id - course id, text - title in another format
  */
-async function findCourse(title, university = 6) {
+async function findCourse(title: string, university = 6): Promise<{
+  id: number;
+  text: string;
+}> {
   if (!title) throw Error("Title is empty");
   let course = null;
   let res = null;
@@ -27,9 +27,13 @@ async function findCourse(title, university = 6) {
     ).then((res) => res.json());
 
     course = res.results.find(
-      (el) => el.text.match(/\w+\/\w+ - (.+)/)[1] === title
+      (el: { id: number; text: string }) => {
+        let match = el.text.match(/\w+\/\w+ - (.+)/);
+        return match ? match[1] === title : false
+      }
     );
   } while (!course && res?.pagination.more);
+  course.id = parseInt(course.id);
   return course;
 }
 

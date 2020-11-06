@@ -1,21 +1,23 @@
 import studentsSelector from "./studentsSelector.js";
 import getStudentIdBF from "./getStudentIdBF.js";
 
+
 /**
  * Search for the student's id in the session
- * @param   {string}               email    Student's email
- * @param   {{
- *  name: string;
- *  surname: string;
- *  second_name: string;
- * }}                              fullName Full name of the student
- * @param   {number}               session  Session's id
- * @returns {Promise<number>}               Student's id
+ * @param email    Student's email
+ * @param fullName Full name of the student
+ * @param session  Session's id
+ * @returns Student's id
  */
-async function getStudentIdInSession(email, fullName, session) {
-  const handleResult = (email, res) => {
+async function getStudentIdInSession(email: string, fullName: {
+  name: string;
+  surname: string;
+  second_name: string;
+}, session: number): Promise<number> {
+  const handleResult = (email: string, res: { data: string[][] }): number | null => {
     if (!(res.data.length > 0)) return null;
-    return res.data.find((el) => el[1] === email)[5];
+    const id = res.data.find((el: string[]) => el[1] === email);
+    return id ? parseInt(id[5]) : null;
   };
 
   let id = await studentsSelector(email, session).then((res) =>
@@ -31,7 +33,7 @@ async function getStudentIdInSession(email, fullName, session) {
 
   id = id || (await getStudentIdBF(email, session));
 
-  if (!id) throw Error("Student was not found");
+  if (id === null) throw Error("Student was not found");
   return id;
 }
 

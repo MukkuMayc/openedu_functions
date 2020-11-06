@@ -1,10 +1,10 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
-import inviteStudents from "./massinvite/inviteStudents.js";
-import enrollStudents from "./massenroll/enrollStudents.js";
-import unenrollStudents from "./massunenroll/unenrollStudents.js";
-import uploadCertificate from "./certificates/uploadCertificate.js";
+import inviteStudents from "./massinvite/inviteStudents";
+import enrollStudents from "./massenroll/enrollStudents";
+import unenrollStudents from "./massunenroll/unenrollStudents";
+import uploadCertificate from "./certificates/uploadCertificate";
 const app = express();
 
 const corsOptions = {

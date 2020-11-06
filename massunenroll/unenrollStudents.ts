@@ -10,7 +10,10 @@ import { formUnenrollPayloadFromCourse } from "./unenrollPayload.js";
  * @param   {string}          students Students to unenroll in CSV format. Only required field: email
  * @returns {Promise<{status: number; redirect: string}>}             JSON from server with status and redirect fields. If request is successful, status will be 0.
  */
-async function unenrollStudents(course, students) {
+async function unenrollStudents(course: {
+  tag: string;
+  session: string;
+}, students: string): Promise<{ status: number; redirect: string; }> {
   const res = await formUnenrollPayloadFromCourse(course, students).then(
     (res) => {
       return request("https://openedu.ru/upd/spbu/student/massunenroll/", {
