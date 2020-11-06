@@ -8,11 +8,11 @@ import getStudentIdInSession from "./getStudentIdInSession.js";
  *          name: string;
  *          surname: string;
  *          second_name: string;
- *          }}                   fullName   Full name of student
+ *          }}                   fullName Full name of student
  * @param   {number}             courseId ID of course there we search for student id
  * @param   {string}             title    Course title, it's needed only for logging
  * @param   {string[]}           dates    Dates that presented in course name, sessions with same date will have priority in search
- * @returns {Promise<number>}                      Student's id
+ * @returns {Promise<number>}             Student's id
  */
 async function getStudentId(email, fullName, courseId, title = "", dates = []) {
   let studentId;

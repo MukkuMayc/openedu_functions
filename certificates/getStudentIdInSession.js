@@ -9,7 +9,7 @@ import getStudentIdBF from "./getStudentIdBF.js";
  *  surname: string;
  *  second_name: string;
  * }}                              fullName Full name of the student
- * @param   {number}               session  Session's number code
+ * @param   {number}               session  Session's id
  * @returns {Promise<number>}               Student's id
  */
 async function getStudentIdInSession(email, fullName, session) {

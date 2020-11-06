@@ -1,5 +1,7 @@
 const ln = "\r\n";
-
+/**
+ * Class for request form(multipart/form-data) payload
+ */
 class RequestFormPayload {
   constructor(props) {
     props = props || {};

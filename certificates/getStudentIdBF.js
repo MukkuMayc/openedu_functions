@@ -3,7 +3,7 @@ import listStudents from "./listStudents.js";
 /**
  * Brute force all students to find one with same email and returns id
  * @param   {number}          email   Student's email
- * @param   {number}          session Session's number code
+ * @param   {number}          session Session's id
  * @returns {Promise<number>}         Student's id
  */
 async function getStudentIdBF(email, session) {

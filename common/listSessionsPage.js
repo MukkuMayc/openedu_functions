@@ -1,5 +1,15 @@
 import request from "./request.js";
 
+/**
+ * List course sessions page by page
+ * @param {number} courseId
+ * @param {number} page
+ * @returns {Promise<{
+ * results: {id: string; text: string;}[];
+ * pagination: {more: boolean};
+ * }>}                                     results - sessions list, every session contains id and text name;\
+ *                                         pagination.more - true, if there are more pages after this page.
+ */
 function listSessionsPage(courseId, page = 1) {
   return request(
     `https://openedu.ru/autocomplete/session/strict?page=${page}&forward={"course":"${courseId}","university":"6","brief":true}`,

@@ -1,5 +1,14 @@
 import request from "./request.js";
 
+/**
+ * Find course by title
+ * @param {string} title      Course title
+ * @param {number} university University code, SPbU is 6
+ * @returns {Promise<{
+ * id: string;
+ * text: string;
+ * }>}                        id - course id, text - title in another format
+ */
 async function findCourse(title, university = 6) {
   if (!title) throw Error("Title is empty");
   let course = null;
