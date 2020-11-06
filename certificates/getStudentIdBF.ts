@@ -1,4 +1,4 @@
-import listStudents from "./listStudents.js";
+import listStudents from "./listStudents";
 
 /**
  * Brute force all students to find one with same email and returns id

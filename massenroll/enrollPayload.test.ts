@@ -1,9 +1,9 @@
 import {
-  formUnenrollPayload,
-  formUnenrollPayloadFromCourse,
-} from "./unenrollPayload.js";
+  formEnrollPayload,
+  formEnrollPayloadFromCourse,
+} from "./enrollPayload";
 
-test("Unenrollment payload from parameters", () => {
+test("Enrollment payload from parameters", () => {
   const payload =
     "-----------------------------myform\r\n" +
     'Content-Disposition: form-data; name="csrfmiddlewaretoken"\r\n' +
@@ -17,9 +17,9 @@ test("Unenrollment payload from parameters", () => {
     "\r\n" +
     "345\r\n" +
     "-----------------------------myform\r\n" +
-    'Content-Disposition: form-data; name="reason"\r\n' +
+    'Content-Disposition: form-data; name="enrollment_type"\r\n' +
     "\r\n" +
-    "whynot\r\n" +
+    "54\r\n" +
     "-----------------------------myform\r\n" +
     'Content-Disposition: form-data; name="students"; filename="somefile.csv"\r\n' +
     "Content-Type: text/csv\r\n" +
@@ -38,17 +38,17 @@ test("Unenrollment payload from parameters", () => {
     "-----------------------------myform\r\n";
 
   expect(
-    formUnenrollPayload(
+    formEnrollPayload(
       532,
       345,
-      "whynot",
+      54,
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru",
       6
     )
   ).toBe(payload);
 });
 
-test("Unenrollment payload only from course and session", async () => {
+test("Enrollment payload only from course and session", () => {
   const payload =
     "-----------------------------myform\r\n" +
     'Content-Disposition: form-data; name="csrfmiddlewaretoken"\r\n' +
@@ -63,9 +63,9 @@ test("Unenrollment payload only from course and session", async () => {
     "\r\n" +
     "10002\r\n" +
     "-----------------------------myform\r\n" +
-    'Content-Disposition: form-data; name="reason"\r\n' +
+    'Content-Disposition: form-data; name="enrollment_type"\r\n' +
     "\r\n" +
-    "Why not\r\n" +
+    "13196\r\n" +
     "-----------------------------myform\r\n" +
     'Content-Disposition: form-data; name="students"; filename="somefile.csv"\r\n' +
     "Content-Type: text/csv\r\n" +
@@ -84,25 +84,25 @@ test("Unenrollment payload only from course and session", async () => {
     "-----------------------------myform\r\n";
 
   return expect(
-    formUnenrollPayloadFromCourse(
+    formEnrollPayloadFromCourse(
       { tag: "phylosophy", session: "fall_2020_spbu_spec" },
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
     )
   ).resolves.toBe(payload);
 });
 
-test("Unenrollment payload from nonexistent course", async () => {
+test("Enrollment payload from nonexistent course", () => {
   return expect(
-    formUnenrollPayloadFromCourse(
+    formEnrollPayloadFromCourse(
       { tag: "nonexistent_course", session: "fall_2020_spbu_spec" },
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
     )
   ).rejects.toThrow("Course was not found");
 });
 
-test("Unenrollment payload from nonexistent session", async () => {
+test("Enrollment payload from nonexistent session", () => {
   return expect(
-    formUnenrollPayloadFromCourse(
+    formEnrollPayloadFromCourse(
       { tag: "phylosophy", session: "nonexistent_session" },
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
     )

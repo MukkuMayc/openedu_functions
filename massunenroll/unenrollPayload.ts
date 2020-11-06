@@ -1,5 +1,5 @@
-import RequestFormPayload from "../common/RequestFormPayload.js";
-import request from "../common/request.js";
+import RequestFormPayload from "../common/RequestFormPayload";
+import request from "../common/request";
 
 /**
  * Form payload for unenroll request

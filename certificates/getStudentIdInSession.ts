@@ -1,5 +1,5 @@
-import studentsSelector from "./studentsSelector.js";
-import getStudentIdBF from "./getStudentIdBF.js";
+import studentsSelector from "./studentsSelector";
+import getStudentIdBF from "./getStudentIdBF";
 
 
 /**

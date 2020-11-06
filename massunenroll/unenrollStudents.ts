@@ -1,5 +1,5 @@
-import request from "../common/request.js";
-import { formUnenrollPayloadFromCourse } from "./unenrollPayload.js";
+import request from "../common/request";
+import { formUnenrollPayloadFromCourse } from "./unenrollPayload";
 
 /**
  *  Make an unenroll request

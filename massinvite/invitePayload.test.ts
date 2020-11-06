@@ -1,4 +1,4 @@
-import formInvitePayload from "./invitePayload.js";
+import formInvitePayload from "./invitePayload";
 
 test("Form invite payload with one user", () => {
   const payload =
@@ -36,10 +36,10 @@ test("Form invite payload with multiple users", () => {
   expect(
     formInvitePayload(
       "eLtKJ08l;mHxnAsGMle@KbDk.ru;dQeFkJ;EAoCAV;;;\r\n" +
-        "wW1UGIEj;xmYPHmmUdV@mruW.ru;TqJtBB;KIPCHy;;;\r\n" +
-        "9P6a3YKU;lbpZyEsobR@GBgF.ru;oagUaT;WCHvFO;;;\r\n" +
-        "dvRL1O0K;UQPZGalyzI@KXEB.ru;EtITwe;gjuqKR;;;\r\n" +
-        "AQ2Hi25R;GQiaLHYJam@aswS.ru;KztTzT;woUPuT;;;"
+      "wW1UGIEj;xmYPHmmUdV@mruW.ru;TqJtBB;KIPCHy;;;\r\n" +
+      "9P6a3YKU;lbpZyEsobR@GBgF.ru;oagUaT;WCHvFO;;;\r\n" +
+      "dvRL1O0K;UQPZGalyzI@KXEB.ru;EtITwe;gjuqKR;;;\r\n" +
+      "AQ2Hi25R;GQiaLHYJam@aswS.ru;KztTzT;woUPuT;;;"
     )
   ).toBe(payload);
 });

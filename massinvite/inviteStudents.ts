@@ -1,6 +1,6 @@
-import formInvitePayload from "./invitePayload.js";
+import formInvitePayload from "./invitePayload";
 import parseString from "set-cookie-parser";
-import request from "../common/request.js";
+import request from "../common/request";
 
 /**
  *  Make an invite request

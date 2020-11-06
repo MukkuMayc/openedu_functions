@@ -1,4 +1,4 @@
-import request from "../common/request.js";
+import request from "../common/request";
 
 /**
  * Request list of students

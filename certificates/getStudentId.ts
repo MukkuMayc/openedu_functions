@@ -1,5 +1,5 @@
-import listSessionsPage from "../common/listSessionsPage.js";
-import getStudentIdInSession from "./getStudentIdInSession.js";
+import listSessionsPage from "../common/listSessionsPage";
+import getStudentIdInSession from "./getStudentIdInSession";
 
 /**
  * Search for student's id in course's sessions

@@ -1,4 +1,4 @@
-import enrollStudents from "./enrollStudents.js";
+import enrollStudents from "./enrollStudents";
 
 test("Enroll student hoYNcpSVka@CFuJ.ru in buis_mast course, fall_2020_spbu_spec session", () => {
   return expect(

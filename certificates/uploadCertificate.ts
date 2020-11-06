@@ -1,7 +1,7 @@
-import request from "../common/request.js";
-import RequestFormPayload from "../common/RequestFormPayload.js";
-import findCourse from "../common/findCourse.js";
-import getStudentId from "./getStudentId.js";
+import request from "../common/request";
+import RequestFormPayload from "../common/RequestFormPayload";
+import findCourse from "../common/findCourse";
+import getStudentId from "./getStudentId";
 
 /**
  * Upload certificate for student
