@@ -7,7 +7,7 @@
     "test": "jest --setupFiles dotenv/config",
     "tsc": "tsc",
     "build": "tsc",
-    "server": "node -r dotenv/config server.js"
+    "server": "node -r dotenv/config build/server.js"
   },
   "author": "",
   "license": "ISC",
