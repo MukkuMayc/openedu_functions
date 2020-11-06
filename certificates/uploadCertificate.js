@@ -1,111 +1,11 @@
 import request from "../common/request.js";
 import RequestFormPayload from "../common/RequestFormPayload.js";
 import findCourse from "../common/findCourse.js";
-import listSessionsPage from "../common/listSessionsPage.js";
-
-/**
- * Returns students whose parameters contain query as substring;
- * @param   {string}         substr  Email or name of student
- * @param   {number}         session Session number code
- * @returns {{
- *  data: string[][];
- *  recordsTotal: number;
- *  recordsFiltered: number;
- *  draw: number;
- * }}                                data: list of students, recordsTotal: how many students in session.
- */
-function studentsSelector(substr, session) {
-  return request("https://openedu.ru/upd/spbu/students/certificates/", {
-    method: "post",
-    // for some emails, it won't find student
-    body: `search[value]=${substr}&search[regex]=false&session=${session}`,
-    headers: {
-      referer: "https://openedu.ru/upd/spbu/students/certificates",
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-    },
-  }).then((res) => res.json());
-}
-
-/**
- * Make different requests to find student's id
- * @param   {string}               email    Student's email
- * @param   {{
-              name: string;
-              surname: string;
-              second_name: string;
-            }}                     fullName Full name of student
- * @param   {number}               session  Session's number code
- * @returns {Promise<number>}               Student's id
- */
-async function getStudentId(email, fullName, session) {
-  const handleResult = (email, res) => {
-    if (!(res.data.length > 0)) return null;
-    return res.data.find((el) => el[1] === email)[5];
-  };
-
-  let id = await studentsSelector(email, session).then((res) =>
-    handleResult(email, res)
-  );
-
-  id =
-    id ||
-    (await studentsSelector(
-      `${fullName.name} ${fullName.surname} ${fullName.second_name}`,
-      session
-    ).then((res) => handleResult(email, res)));
-
-  id = id || (await getStudentIdBF(email, session));
-
-  if (!id) throw Error("Student was not found");
-  return id;
-}
-
-/**
- * Request list of students
- * @param   {number}         session Session's number code
- * @param   {number}         start   Student's number from that we start
- * @returns {{
- *  data: string[][];
- *  recordsTotal: number;
- *  recordsFiltered: number;
- * }}                                data: list of students, recordsTotal: how many students in session.
- */
-function getStudents(session, start = 0) {
-  return request("https://openedu.ru/upd/spbu/students/certificates/", {
-    method: "post",
-    headers: {
-      referer: "https://openedu.ru/upd/spbu/students/certificates",
-      "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-    },
-    body: `start=${start}&length=100&session=${session}`,
-  }).then((res) => res.json());
-}
-
-/**
- * Brute force all students to find one with same email and returns id
- * @param   {number}          email   Student's email
- * @param   {number}          session Session's number code
- * @returns {Promise<number>}         Student's id
- */
-async function getStudentIdBF(email, session) {
-  let st = null;
-  let students = await getStudents(session);
-  const total = students.recordsTotal;
-  students = students.data;
-  st = students.find((st) => st[1] === email);
-  if (!st) {
-    for (let i = 100; i < total; i += 100) {
-      students = (await getStudents(session, i)).data;
-      st = students.find((st) => st[1] === email);
-      if (st) break;
-    }
-  }
-  return st && st[5];
-}
+import getStudentId from "./getStudentId.js";
 
 /**
  * Upload certificate for student
- * @param  {string}     email      email
+ * @param  {string}     email      Email
  * @param {{
  * name: string;
  * surname: string;
@@ -126,48 +26,14 @@ async function uploadCertificate(email, fullName, grade, certUrl, courseName) {
   if (!course) throw Error(`Course "${courseNormalName}" was not found`);
 
   const courseId = course.id;
-  let studentId;
-  let page = 0;
-  let morePages = false;
-  do {
-    let sessions = await listSessionsPage(courseId, ++page).then((res) => {
-      morePages = res.pagination.more;
-      return res.results;
-    });
 
-    let sessionWithSameDate = sessions.find((session) =>
-      courseDates.find((d) => d === session.text.match(/\d{2}.\d{2}.\d{4}/g)[0])
-    );
-
-    if (sessionWithSameDate) {
-      try {
-        studentId = await getStudentId(email, fullName, sessionWithSameDate.id);
-        console.log(
-          `Found student ${email} at "${courseNormalName}", "${sessionWithSameDate.text}"`
-        );
-        break;
-      } catch (err) {
-        if (err.toString() !== "Error: Student was not found") throw err;
-      }
-      sessions.splice(
-        sessions.findIndex((el) => el.id === sessionWithSameDate.id),
-        1
-      );
-    }
-
-    for (const session of sessions) {
-      try {
-        studentId = await getStudentId(email, fullName, session.id);
-        console.log(
-          `Found student ${email} at "${courseNormalName}", "${session.text}"`
-        );
-        break;
-      } catch (err) {
-        if (err.toString() !== "Error: Student was not found") throw err;
-        continue;
-      }
-    }
-  } while (!studentId && morePages);
+  const studentId = await getStudentId(
+    email,
+    fullName,
+    courseId,
+    courseNormalName,
+    courseDates
+  );
 
   if (!studentId) {
     console.log(`Student ${email} was not found`);
