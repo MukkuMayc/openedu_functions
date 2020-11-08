@@ -36,15 +36,14 @@ async function massupload(arr: CSVField[]) {
         },
         body: JSON.stringify({
           email: item.Email,
-          full_name: {
+          fullName: {
             name: item.Name,
             surname: item.Surname,
-            second_name: item.SecondName,
+            secondName: item.SecondName,
           },
-          session: 306,
           grade: parseInt(item.MarkValue),
-          certificateURL: item.QR,
-          course_name: item.CourseFullName,
+          certificateUrl: item.QR,
+          courseName: item.CourseFullName,
         }),
       }).then((res) => {
         if (res.status === 200) {

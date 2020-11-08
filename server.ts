@@ -1,6 +1,7 @@
 import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
+import * as yup from "yup";
 import inviteStudents from "./massinvite/inviteStudents";
 import enrollStudents from "./massenroll/enrollStudents";
 import unenrollStudents from "./massunenroll/unenrollStudents";
@@ -35,7 +36,7 @@ app.get("/", (_req, res) => {
     '    "Content-Type": "application/json; charset=UTF-8",\n' +
     "  },\n" +
     "  body: {\n" +
-    "    course: {\n" +
+    "    courseInfo: {\n" +
     '      tag: "edu_tech",\n' +
     '      session: "fall_2020_spbu_spec"\n' +
     "    }\n" +
@@ -50,7 +51,7 @@ app.get("/", (_req, res) => {
     '    "Content-Type": "application/json; charset=UTF-8",\n' +
     "  },\n" +
     "  body: {\n" +
-    "    course: {\n" +
+    "    courseInfo: {\n" +
     '      tag: "edu_tech",\n' +
     '      session: "fall_2020_spbu_spec"\n' +
     "    }\n" +
@@ -66,58 +67,118 @@ app.get("/", (_req, res) => {
     "  },\n" +
     "  body: {\n" +
     '    email: "me@example.com"\n' +
-    "    full_name: {\n" +
+    "    fullName: {\n" +
     "      name: Name,\n" +
     "      surname: Surname,\n" +
-    "      second_name: Second,\n" +
+    "      secondName: Second,\n" +
     "    }\n" +
     "    grade: 95\n" +
-    '    certificateURL: "http://www.africau.edu/images/default/sample.pdf"\n' +
-    "    course_name: 2017-006-001 Базы данных (15.02.2017 - 20.05.2017)" +
+    '    certificateUrl: "http://www.africau.edu/images/default/sample.pdf"\n' +
+    "    courseName: 2017-006-001 Базы данных (15.02.2017 - 20.05.2017)" +
     "  }\n" +
     "})\n";
   res.send(resText);
 });
 
 app.post("/invite", async (req, res) => {
-  await inviteStudents(req.body?.students)
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(500).send(err.toString());
-    });
+  const yupBody = yup.object().shape({
+    students: yup.string().required(),
+  });
+
+  yupBody
+    .validate(req.body)
+    .then(() =>
+      inviteStudents(req.body.students)
+        .then((result) => {
+          res.json(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err.toString());
+        })
+    )
+    .catch((err) => res.status(400).send(err.toString()));
 });
 
 app.post("/enroll", async (req, res) => {
-  await enrollStudents(req.body?.course, req.body?.students)
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(500).send(err.toString());
-    });
+  const yupBody = yup.object().shape({
+    courseInfo: yup.object().shape({
+      tag: yup.string().required(),
+      session: yup.string().required(),
+    }),
+    students: yup.string().required(),
+  });
+
+  await yupBody
+    .validate(req.body)
+    .then(() =>
+      enrollStudents(req.body.courseInfo, req.body.students)
+        .then((result) => {
+          res.json(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err.toString());
+        })
+    )
+    .catch((err) => res.status(400).send(err.toString()));
 });
 
 app.post("/unenroll", async (req, res) => {
-  await unenrollStudents(req.body?.course, req.body?.students)
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(500).send(err.toString());
-    });
+  const yupBody = yup.object().shape({
+    courseInfo: yup.object().shape({
+      tag: yup.string().required(),
+      session: yup.string().required(),
+    }),
+    students: yup.string().required(),
+  });
+
+  await yupBody
+    .validate(req.body)
+    .then(() =>
+      unenrollStudents(req.body.courseInfo, req.body.students)
+        .then((result) => {
+          res.json(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err.toString());
+        })
+    )
+    .catch((err) => res.status(400).send(err.toString()));
 });
 
 app.post("/certificate", async (req, res) => {
-  const { email, full_name, grade, certificateURL, course_name } = req.body;
-  await uploadCertificate(email, full_name, grade, certificateURL, course_name)
-    .then((result) => {
-      res.json(result);
-    })
-    .catch((err) => {
-      res.status(500).send(err.toString());
-    });
+  const yupBody = yup.object().shape({
+    email: yup.string().email().required("Email is required"),
+    fullName: yup
+      .object()
+      .shape({
+        name: yup.string().notRequired(),
+        surname: yup.string(),
+        secondName: yup.string(),
+      })
+      .required(),
+    grade: yup.number().required(),
+    certificateUrl: yup.string().url().required(),
+    courseName: yup.string(),
+  });
+
+  await yupBody
+    .validate(req.body)
+    .then(() =>
+      uploadCertificate(
+        req.body.email,
+        req.body.fullName,
+        req.body.grade,
+        req.body.certificateUrl,
+        req.body.courseName
+      )
+        .then((result) => {
+          res.json(result);
+        })
+        .catch((err) => {
+          res.status(500).send(err.toString());
+        })
+    )
+    .catch((err) => res.status(400).send(err.toString()));
 });
 
 const port = process.env.PORT || 8080;
