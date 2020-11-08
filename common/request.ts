@@ -22,10 +22,12 @@ async function request(url: string, params: any): Promise<NodeResponse> {
     },
     ...others,
   });
-  const authenticated = res.headers
-    .raw()
-    ["set-cookie"].map((el) => parseString(el)[0])
-    .find((el) => el.name === "authenticated")?.value;
+  const setCookie = res.headers.raw()["set-cookie"];
+
+  const authenticated =
+    setCookie
+      ?.map((el) => parseString(el)[0])
+      .find((el) => el.name === "authenticated")?.value || null;
   if (authenticated === "0") {
     throw new Error("User is not authenticated");
   }
