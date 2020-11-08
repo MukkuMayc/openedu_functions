@@ -3,12 +3,12 @@ import request from "../common/request";
 
 /**
  * Form payload for enroll request
- * @param   {number} course     Course id
- * @param   {number} session    Session id
- * @param   {number} enrType Code of enroll type (in practice we always use 13196)
- * @param   {string} students   Students in CSV format
- * @param   {number} univer     University code, SPbU is 6
- * @returns {string}            Payload for enroll request
+ * @param course   Course id
+ * @param session  Session id
+ * @param enrType  Code of enroll type (in practice we always use 13196)
+ * @param students Students in CSV format
+ * @param univer   University code, SPbU is 6
+ * @returns Payload for enroll request
  */
 function formEnrollPayload(
   course: number,

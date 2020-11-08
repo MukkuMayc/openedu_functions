@@ -3,12 +3,9 @@ import { formUnenrollPayloadFromCourse } from "./unenrollPayload";
 
 /**
  *  Make an unenroll request
- * @param {{
-            tag: string;
-            session: string;
-          }}                  course   Contains information about course: tag (example: phylosophy) and session (example: fall_2020_spbu_spec)
- * @param   {string}          students Students to unenroll in CSV format. Only required field: email
- * @returns {Promise<{status: number; redirect: string}>}             JSON from server with status and redirect fields. If request is successful, status will be 0.
+ * @param course   Contains information about course: tag (example: phylosophy) and session (example: fall_2020_spbu_spec)
+ * @param students Students to unenroll in CSV format. Only required field: email
+ * @returns JSON from server with status and redirect fields. If request is successful, status will be 0.
  */
 async function unenrollStudents(course: {
   tag: string;
