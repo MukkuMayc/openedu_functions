@@ -41,8 +41,8 @@ test("Unenrollment payload from parameters", () => {
     formUnenrollPayload(
       532,
       345,
-      "whynot",
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru",
+      "whynot",
       6
     )
   ).toBe(payload);

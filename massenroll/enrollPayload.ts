@@ -1,5 +1,6 @@
 import RequestFormPayload from "../common/RequestFormPayload";
-import request from "../common/request";
+import findCourse from "../common/findCourse";
+import findSession from "../common/findSession";
 
 /**
  * Form payload for enroll request
@@ -13,9 +14,9 @@ import request from "../common/request";
 function formEnrollPayload(
   course: number,
   session: number,
-  enrType: number,
   students: string,
-  univer: number = 6
+  enrType = 13196,
+  univer = 6
 ): string {
   let payload = new RequestFormPayload();
   payload.addField("course", course);
@@ -29,56 +30,29 @@ function formEnrollPayload(
 
 /**
  * Form payload for enroll request
- * @param course   Contains information about course: tag (example: phylosophy) and session (example: fall_2020_spbu_spec)
- * @param students Students to enroll in CSV format. Only required field: email
+ * @param courseInfo Contains information about course: tag (example: phylosophy) and session (example: fall_2020_spbu_spec)
+ * @param students   Students to enroll in CSV format. Only required field: email
  * @returns Payload for enroll request
  */
 async function formEnrollPayloadFromCourse(
-  course: {
+  courseInfo: {
     tag: string;
     session: string;
   },
   students: string
 ): Promise<string> {
-  const university = 6;
-  let res = await request(
-    `https://openedu.ru/autocomplete/course/?q=${course.tag}&forward={"university":"${university}"}`,
-    {
-      headers: {
-        referer: "https://openedu.ru/upd/spbu/student/massenroll/",
-      },
-    }
-  )
-    .then((res) => res.json())
-    .then((json) => json.results);
+  const course = await findCourse(courseInfo.tag);
 
-  if (!(res?.length > 0)) {
+  if (course === null) {
     throw new Error("Course was not found");
   }
 
-  const courseId = res[0].id;
-
-  res = await request(
-    `https://openedu.ru/autocomplete/session/active?forward={"course":"${courseId}","university":"${university}"}`,
-    {
-      headers: {
-        referer: "https://openedu.ru/upd/spbu/student/massenroll/",
-      },
-    }
-  )
-    .then((res) => res.json())
-    .then((json) => json.results);
-
-  const session = res.find((el: { id: number; text: string }) =>
-    el.text.includes(course.session)
-  )?.id;
-  if (!session) {
+  const session = await findSession(courseInfo.session, course.id);
+  if (session === null) {
     throw new Error("Session was not found");
   }
 
-  const enrollType = 13196;
-
-  return formEnrollPayload(courseId, session, enrollType, students, university);
+  return formEnrollPayload(course.id, session.id, students);
 }
 
 export { formEnrollPayload, formEnrollPayloadFromCourse };

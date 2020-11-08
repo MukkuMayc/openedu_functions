@@ -41,8 +41,8 @@ test("Enrollment payload from parameters", () => {
     formEnrollPayload(
       532,
       345,
-      54,
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru",
+      54,
       6
     )
   ).toBe(payload);
