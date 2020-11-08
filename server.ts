@@ -15,7 +15,7 @@ const corsOptions = {
 app.use(bodyParser.json());
 app.use(cors(corsOptions));
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   const resText =
     "/invite\n" +
     'fetch("hostname/invite", {\n' +

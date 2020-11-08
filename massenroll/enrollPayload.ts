@@ -32,7 +32,7 @@ function formEnrollPayload(
  * @param course   Contains information about course: tag (example: phylosophy) and session (example: fall_2020_spbu_spec)
  * @param students Students to enroll in CSV format. Only required field: email
  * @returns Payload for enroll request
-*/
+ */
 async function formEnrollPayloadFromCourse(
   course: {
     tag: string;

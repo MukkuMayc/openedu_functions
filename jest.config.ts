@@ -1,4 +1,4 @@
-import type {Config} from '@jest/types';
+import type { Config } from "@jest/types";
 
 const config: Config.InitialOptions = {
   roots: ["<rootDir>"],
@@ -8,7 +8,7 @@ const config: Config.InitialOptions = {
   testMatch: [
     "**/__tests__/**/*.+(ts|tsx|js)",
     "**/?(*.)+(spec|test).+(ts|tsx|js)",
-  ]
-}
+  ],
+};
 
 export default config;
