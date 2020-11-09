@@ -13,7 +13,7 @@ import getStudentIdInSession from "./getStudentIdInSession";
 async function getStudentId(email: string, fullName: {
   name: string;
   surname: string;
-  second_name: string;
+  secondName: string;
 }, courseId: number, title: string = "", dates: string[] = []): Promise<number | null> {
   let studentId;
   let page = 0;

@@ -12,7 +12,7 @@ import getStudentIdBF from "./getStudentIdBF";
 async function getStudentIdInSession(email: string, fullName: {
   name: string;
   surname: string;
-  second_name: string;
+  secondName: string;
 }, session: number): Promise<number> {
   const handleResult = (email: string, res: { data: string[][] }): number | null => {
     if (!(res.data.length > 0)) return null;
@@ -27,7 +27,7 @@ async function getStudentIdInSession(email: string, fullName: {
   id =
     id ||
     (await studentsSelector(
-      `${fullName.name} ${fullName.surname} ${fullName.second_name}`,
+      `${fullName.name} ${fullName.surname} ${fullName.secondName}`,
       session
     ).then((res) => handleResult(email, res)));
 

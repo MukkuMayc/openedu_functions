@@ -152,8 +152,8 @@ app.post("/certificate", async (req, res) => {
       .object()
       .shape({
         name: yup.string().notRequired(),
-        surname: yup.string(),
-        secondName: yup.string(),
+        surname: yup.string().notRequired(),
+        secondName: yup.string().notRequired(),
       })
       .required(),
     grade: yup.number().required(),

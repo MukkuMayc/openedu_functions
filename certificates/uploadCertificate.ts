@@ -9,7 +9,7 @@ import getStudentId from "./getStudentId";
  * @param fullName   Full name of student
  * @param grade      Student's grade
  * @param certUrl    Certificate's url
- * @param courseName Name of course. \
+ * @param courseName Name of course \
  *                   Important! The courseName parameter have to match the following regexp:
  *                   `/\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/`
  * @returns "Success!" in case of success and Error in another
@@ -17,11 +17,12 @@ import getStudentId from "./getStudentId";
 async function uploadCertificate(email: string, fullName: {
   name: string;
   surname: string;
-  second_name: string;
+  secondName: string;
 }, grade: number, certUrl: string, courseName: string): Promise<string> {
-  const [, courseNormalName, ...courseDates] = courseName.match(
+  let [, courseNormalName, ...courseDates] = courseName.match(
     /\d{4}-\d{3}-\d{3} (.*) \((\d{2}.\d{2}.\d{4}) - (\d{2}.\d{2}.\d{4})\)/
-  );
+  ) || ['', courseName];
+
   let course = await findCourse(courseNormalName);
   if (!course) throw Error(`Course "${courseNormalName}" was not found`);
 
