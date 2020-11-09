@@ -12,13 +12,13 @@ const defaultHeaders = {
  * @param url
  * @param params Parameters of fetch()
  */
-async function request(url: string, params: any): Promise<NodeResponse> {
+async function request(url: string, params: any = {}): Promise<NodeResponse> {
   const { headers, ...others } = params;
 
   const res = await fetch(url, {
     headers: {
-      ...headers,
       ...defaultHeaders,
+      ...headers,
     },
     ...others,
   });

@@ -19,7 +19,7 @@ async function uploadCertificate(email: string, fullName: {
   surname: string;
   secondName: string;
 }, grade: number, certUrl: string, courseName: string): Promise<string> {
-  let [, courseNormalName, ...courseDates] = courseName.match(
+  const [, courseNormalName, ...courseDates] = courseName.match(
     /\d{4}-\d{3}-\d{3} (.*) \((\d{2}.\d{2}.\d{4}) - (\d{2}.\d{2}.\d{4})\)/
   ) || ['', courseName];
 

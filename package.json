@@ -12,6 +12,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/cheerio": "^0.22.22",
+    "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "csv-parser": "^2.3.3",
     "dotenv": "^8.2.0",
