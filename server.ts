@@ -6,6 +6,18 @@ import inviteStudents from "./massinvite/inviteStudents";
 import enrollStudents from "./massenroll/enrollStudents";
 import unenrollStudents from "./massunenroll/unenrollStudents";
 import uploadCertificate from "./certificates/uploadCertificate";
+import fs from "fs";
+import { askEmail, askPassword } from "./common/askCredentials";
+import authenticate from "./authentication/authentificate";
+import getMWToken from "./authentication/getMWToken";
+import dotenv from "dotenv";
+
+const result = dotenv.config();
+
+if (result.error && !result.error.message.includes("ENOENT")) {
+  throw result.error;
+}
+
 const app = express();
 
 const corsOptions = {
@@ -183,6 +195,53 @@ app.post("/certificate", async (req, res) => {
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => {
-  console.log(`App is listening at http://localhost:${port}`);
-});
+async function authorize() {
+  const res = await authenticate(await askEmail(), await askPassword());
+  return res;
+}
+
+async function loadMWToken() {
+  console.log("Loading CSRF middleware token");
+  process.env.CSRF_MIDDLEWARE_TOKEN = await getMWToken();
+}
+
+function saveEnv() {
+  return new Promise((resolve) =>
+    fs.writeFile(
+      ".env",
+      `CSRF_TOKEN=${process.env.CSRF_TOKEN}
+CSRF_MIDDLEWARE_TOKEN=${process.env.CSRF_MIDDLEWARE_TOKEN}
+AUTHENTICATED_USER=${process.env.AUTHENTICATED_USER}
+SESSION_ID=${process.env.SESSION_ID}`,
+      resolve
+    )
+  );
+}
+
+if (
+  !process.env.CSRF_TOKEN ||
+  !process.env.SESSION_ID ||
+  !process.env.AUTHENTICATED_USER
+) {
+  console.log("User is not authenticated");
+  authorize().then((cookies) => {
+    process.env.CSRF_TOKEN = cookies.get("csrftoken");
+    process.env.AUTHENTICATED_USER = cookies.get("authenticated_user");
+    process.env.SESSION_ID = cookies.get("sessionid");
+    loadMWToken().then(() => {
+      saveEnv().then(() => startApp());
+    });
+  });
+} else {
+  process.env.CSRF_MIDDLEWARE_TOKEN
+    ? startApp()
+    : loadMWToken()
+        .then(() => saveEnv())
+        .then(() => startApp());
+}
+
+function startApp() {
+  app.listen(port, () => {
+    console.log(`App is listening at http://localhost:${port}`);
+  });
+}
