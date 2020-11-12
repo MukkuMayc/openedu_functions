@@ -1,35 +1,8 @@
-// import request from "../common/request";
 import parseString from "set-cookie-parser";
 import fetch, { Response as NodeResponse } from "node-fetch";
-import cheerio from "cheerio";
+import getTokens from "./getTokens";
 
-type Cookies = Map<string, string>;
-
-/**
- * Receive csrftoken and csrfmiddlewaretoken from login page
- */
-async function getTokens() {
-  const tokens = {
-    CSRFToken: "",
-    middlewaretoken: "",
-  };
-  await fetch("https://sso.openedu.ru/login/")
-    .then((res) => {
-      tokens.CSRFToken =
-        parseString(res.headers.raw()["set-cookie"] || "").find(
-          (el) => el.name === "csrftoken"
-        )?.value || "";
-      return res.text();
-    })
-    .then((page) => {
-      tokens.middlewaretoken =
-        cheerio
-          .load(page)("form#login_auth [name=csrfmiddlewaretoken]")
-          .attr("value") || "";
-    });
-
-  return tokens;
-}
+class Cookies extends Map<string, string> {}
 
 /**
  * Handle redirecting response from server, save cookies and make next request
@@ -66,6 +39,10 @@ async function handleResponse(
 
   // if ok, return cookies
   if (res.ok) {
+    const result = domains.find((d) => d.domain === "openedu.ru")!.cookies;
+    if (result.get("authenticated") === "0") {
+      throw Error("Fail to authenticate");
+    }
     return domains.find((d) => d.domain === "openedu.ru")!.cookies;
   }
 
@@ -78,39 +55,27 @@ async function handleResponse(
     throw Error(`Don't know where to redirect, ${JSON.stringify(headers)}`);
   }
 
-  let cookiesStr = [...cookies].map((el) => `${el[0]}=${el[1]}`).join("; ");
   return await fetch(headers.location[0], {
     headers: {
-      Cookie: cookiesStr,
-      "User-Agent":
-        "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:82.0) Gecko/20100101 Firefox/82.0",
-      "Accept-Encoding": "gzip, deflate, br",
-      Accept:
-        "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-      "Accept-Language": "en,en-US;q=0.8,ru-RU;q=0.5,ru;q=0.3",
-      "Upgrade-Insecure-Requests": "1",
-      Connection: "keep-alive",
+      Cookie: [...cookies].map((el) => `${el[0]}=${el[1]}`).join("; "),
       referer: "https://sso.openedu.ru",
     },
     redirect: "manual",
   }).then((res) => handleResponse(res, domains));
 }
 
-async function login(
-  username: string,
-  password: string,
-  middlewaretoken: string,
-  cookies: Cookies
-) {
-  let cookiesStr = [...cookies].map((el) => `${el[0]}=${el[1]}`).join(";");
-  const params = new URLSearchParams();
-  params.append("csrfmiddlewaretoken", middlewaretoken);
-  params.append("username", username);
-  params.append("password", password);
-  const domains: {
-    domain: string;
-    cookies: Cookies;
-  }[] = [
+/**
+ * Authenticate user, return cookies for openedu.ru
+ * @param username usename or email
+ */
+async function authenticate(username: string, password: string) {
+  const cookies: Cookies = new Cookies();
+  const tokens = await getTokens();
+  cookies.set("csrftoken", tokens.CSRFToken);
+  cookies.set("authenticated", "0");
+  cookies.set("authenticated_user", "Anonymous");
+
+  const domains = [
     {
       domain: "sso.openedu.ru",
       cookies: cookies,
@@ -124,24 +89,13 @@ async function login(
   return await fetch("https://sso.openedu.ru/login/", {
     method: "post",
     headers: {
-      Cookie: cookiesStr,
+      Cookie: [...cookies].map((el) => `${el[0]}=${el[1]}`).join(";"),
       "Content-Type": "application/x-www-form-urlencoded",
       Referer: "https://sso.openedu.ru/login/",
-      Connection: "keep-alive",
     },
     redirect: "manual",
-    body: params.toString(),
+    body: `csrfmiddlewaretoken=${tokens.middlewaretoken}&username=${username}&password=${password}`,
   }).then((res) => handleResponse(res, domains));
-}
-
-async function authenticate(username: string, password: string) {
-  const cookies: Cookies = new Map();
-  const tokens = await getTokens();
-  cookies.set("csrftoken", tokens.CSRFToken);
-  cookies.set("authenticated", "0");
-  cookies.set("authenticated_user", "Anonymous");
-
-  return await login(username, password, tokens.middlewaretoken, cookies);
 }
 
 export { Cookies };
