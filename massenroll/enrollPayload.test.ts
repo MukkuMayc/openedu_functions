@@ -85,7 +85,7 @@ test("Enrollment payload only from course and session", () => {
 
   return expect(
     formEnrollPayloadFromCourse(
-      { tag: "phylosophy", session: "fall_2020_spbu_spec" },
+      { identificator: "phylosophy", session: "fall_2020_spbu_spec" },
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
     )
   ).resolves.toBe(payload);
@@ -94,7 +94,7 @@ test("Enrollment payload only from course and session", () => {
 test("Enrollment payload from nonexistent course", () => {
   return expect(
     formEnrollPayloadFromCourse(
-      { tag: "nonexistent_course", session: "fall_2020_spbu_spec" },
+      { identificator: "nonexistent_course", session: "fall_2020_spbu_spec" },
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
     )
   ).rejects.toThrow("Course was not found");
@@ -103,7 +103,7 @@ test("Enrollment payload from nonexistent course", () => {
 test("Enrollment payload from nonexistent session", () => {
   return expect(
     formEnrollPayloadFromCourse(
-      { tag: "phylosophy", session: "nonexistent_session" },
+      { identificator: "phylosophy", session: "nonexistent_session" },
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
     )
   ).rejects.toThrow("Session was not found");

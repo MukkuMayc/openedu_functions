@@ -5,7 +5,6 @@ import * as yup from "yup";
 import fs from "fs";
 import dotenv from "dotenv";
 import multer from "multer";
-import csv from "csv-parser";
 import inviteStudents from "./massinvite/inviteStudents";
 import enrollStudents from "./massenroll/enrollStudents";
 import unenrollStudents from "./massunenroll/unenrollStudents";
@@ -13,6 +12,8 @@ import uploadCertificate from "./certificates/uploadCertificate";
 import { askEmail, askPassword } from "./common/askCredentials";
 import authenticate from "./authentication/authentificate";
 import getMWToken from "./authentication/getMWToken";
+import readFile, { Student } from "./inv-enroll/readFile";
+import { CourseInfo } from "./common/types";
 
 const result = dotenv.config();
 
@@ -199,52 +200,77 @@ app.post("/certificate", async (req, res) => {
     .catch((err) => res.status(400).send(err.toString()));
 });
 
-app.post("/file", upload.single("uploaded_file"), async (req, res) => {
-  interface CSVField {
-    Email: string;
-    Name: string;
-    Surname: string;
-    SecondName: string;
-    CourseFullName: string;
-  }
+app.post("/combine/inv-enroll", upload.single("fileeeee"), async (req, res) => {
+  const students = await readFile(req.file.path);
 
-  let students: CSVField[] = [];
-  await new Promise((resolve) =>
-    fs
-      .createReadStream(req.file.path)
-      .pipe(csv({ separator: ";" }))
-      .on("data", (row) => {
-        students.push(row);
-      })
-      .on("end", () => {
-        console.log("CSV file successfully processed");
-        console.log("Loaded", students.length, "users");
-        console.log("STUDENTS\n", students);
-        resolve();
-      })
+  const studentsSchema = yup.array().of(
+    yup.object().shape({
+      Email: yup.string().email().required(),
+      Name: yup.string().required(),
+      Surname: yup.string().required(),
+      SecondName: yup.string().notRequired(),
+      CourseName: yup.string().required(),
+      Session: yup.string().required(),
+    })
   );
 
-  const data = fs.readFileSync(req.file.path);
-  await inviteStudents(String(data)).then((res) => {
-    console.log(res);
+  await new Promise((resolve) =>
+    studentsSchema
+      .validate(students)
+      .then(() => resolve())
+      .catch((err) => res.status(400).send(err.toString()))
+  );
+
+  const studentsInviteData = students.reduce((acc, i) => {
+    const [, username] = i.Email.match(/(\w+)@/) || [, ""];
+    return acc.concat(
+      `${username};${i.Email};${i.Name};${i.Surname};${i.SecondName}\r\n`
+    );
+  }, "");
+  console.log(studentsInviteData);
+
+  let results = {
+    invite: "",
+    enroll: {
+      status: 0,
+      redirect: "",
+    },
+  };
+
+  await inviteStudents(studentsInviteData).then((res) => {
+    results.invite = res;
   });
 
-  const list = students.reduce(
-    (acc: Map<string, Array<CSVField>>, item: CSVField) => {
-      if (!acc.get(item.CourseFullName)) {
-        acc.set(item.CourseFullName, []);
-      }
-
-      acc.get(item.CourseFullName)!.push(item);
+  const studentsInCourses = students.reduce(
+    (acc: Map<CourseInfo, Student[]>, item) => {
+      const courseInfo = new CourseInfo(item.CourseName, item.Session);
+      acc.get(courseInfo) || acc.set(courseInfo, []);
+      acc.get(courseInfo)!.push(item);
       return acc;
     },
     new Map()
   );
 
-  console.log(list);
+  for (const course of studentsInCourses) {
+    const emails = course[1].reduce(
+      (acc, i) => acc.concat(`${i.Email}\r\n`),
+      ""
+    );
+    const [, name] =
+      course[0].identificator.match(
+        /\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/
+      ) || [];
+    console.log({ identificator: name, session: course[0].session }, emails);
+    await enrollStudents(
+      { identificator: name, session: course[0].session },
+      emails
+    ).then((res) => {
+      results.enroll = res;
+    });
+  }
 
   console.log(req.file, req.body);
-  res.send("ok");
+  res.json(results);
 });
 
 const port = process.env.PORT || 8080;

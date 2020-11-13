@@ -36,12 +36,12 @@ function formEnrollPayload(
  */
 async function formEnrollPayloadFromCourse(
   courseInfo: {
-    tag: string;
+    identificator: string;
     session: string;
   },
   students: string
 ): Promise<string> {
-  const course = await findCourse(courseInfo.tag);
+  const course = await findCourse(courseInfo.identificator);
 
   if (course === null) {
     throw new Error("Course was not found");
