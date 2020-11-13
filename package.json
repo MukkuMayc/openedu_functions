@@ -6,14 +6,13 @@
   "scripts": {
     "test": "jest --setupFiles dotenv/config",
     "tsc": "tsc",
-    "build": "tsc",
+    "build": "tsc && webpack",
     "server": "node build/server.js",
-    "br": "tsc && node build/server.js"
+    "br": "tsc && webpack && node build/server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@types/cheerio": "^0.22.22",
     "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "csv-parser": "^2.3.3",
@@ -21,20 +20,29 @@
     "express": "^4.17.1",
     "multer": "^1.4.2",
     "node-fetch": "^2.6.1",
+    "react": "^17.0.1",
+    "react-dom": "^17.0.1",
     "set-cookie-parser": "^2.4.6",
     "yup": "^0.29.3"
   },
   "devDependencies": {
+    "@types/cheerio": "^0.22.22",
     "@types/cors": "^2.8.8",
     "@types/express": "^4.17.8",
     "@types/jest": "^26.0.15",
     "@types/multer": "^1.4.4",
     "@types/node-fetch": "^2.5.7",
+    "@types/react": "^16.9.56",
+    "@types/react-dom": "^16.9.9",
     "@types/set-cookie-parser": "^2.4.0",
     "@types/yup": "^0.29.9",
+    "html-webpack-plugin": "^4.5.0",
     "jest": "^26.6.1",
     "ts-jest": "^26.4.3",
+    "ts-loader": "^8.0.11",
     "ts-node": "^9.0.0",
-    "typescript": "^4.0.5"
+    "typescript": "^4.0.5",
+    "webpack": "^5.4.0",
+    "webpack-cli": "^4.2.0"
   }
 }

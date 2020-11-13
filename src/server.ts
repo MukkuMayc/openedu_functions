@@ -97,7 +97,7 @@ app.use(cors(corsOptions));
 //   res.send(resText);
 // });
 
-app.use(express.static("static"));
+app.use(express.static("build/static"));
 
 app.post("/invite", async (req, res) => {
   const yupBody = yup.object().shape({
