@@ -1,8 +1,7 @@
 import path from "path";
-import webpack from "webpack";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 
-const config: webpack.Configuration = {
+const config: any = {
   entry: "./static/src/index.tsx",
   module: {
     rules: [
@@ -19,6 +18,11 @@ const config: webpack.Configuration = {
   output: {
     filename: "bundle.js",
     path: path.resolve(__dirname, "build", "static"),
+  },
+  devServer: {
+    contentBase: path.join(__dirname, "static"),
+    compress: true,
+    port: 9000,
   },
   plugins: [
     new HtmlWebpackPlugin({

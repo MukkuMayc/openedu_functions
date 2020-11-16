@@ -201,6 +201,11 @@ app.post("/certificate", async (req, res) => {
 });
 
 app.post("/combine/inv-enroll", upload.single("fileeeee"), async (req, res) => {
+  console.log("file", req.file);
+  if (!req.file) {
+    res.status(400).send("You sent no file");
+    return;
+  }
   const students = await readFile(req.file.path);
 
   const studentsSchema = yup.array().of(
@@ -217,7 +222,7 @@ app.post("/combine/inv-enroll", upload.single("fileeeee"), async (req, res) => {
   await new Promise((resolve) =>
     studentsSchema
       .validate(students)
-      .then(() => resolve())
+      .then(() => resolve(0))
       .catch((err) => res.status(400).send(err.toString()))
   );
 
