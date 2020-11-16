@@ -1,7 +1,7 @@
-import Hello from "./components/Hello";
+import App from "./components/App";
 import { h, render } from "preact";
 
 render(
-  <Hello compiler="hello" framework="world" />,
+  <App compiler="hello" framework="world" />,
   document.getElementById("root")!
 );
