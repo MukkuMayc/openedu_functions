@@ -12,6 +12,7 @@ import authenticate from "./authentication/authentificate";
 import getMWToken from "./authentication/getMWToken";
 import readFile, { Student } from "./inv-enroll/readFile";
 import { CourseInfo } from "./common/types";
+import saveEnv from "./common/saveEnv";
 
 const result = dotenv.config();
 
@@ -226,6 +227,7 @@ app.post("/authenticate", async (req, res) => {
       process.env.AUTHENTICATED_USER = cookies.get("authenticated_user");
       process.env.SESSION_ID = cookies.get("sessionid");
       process.env.CSRF_MIDDLEWARE_TOKEN = await getMWToken();
+      await saveEnv();
       res.send("Authenticated");
     })
     .catch((err) => res.send(err.toString()));
