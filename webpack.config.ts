@@ -3,7 +3,7 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 
 const config: any = {
   entry: "./static/src/index.tsx",
-  mode: "production",
+  mode: "development",
   module: {
     rules: [
       {
@@ -25,6 +25,7 @@ const config: any = {
     compress: true,
     port: 9000,
   },
+  devtool: "source-map",
   plugins: [
     new HtmlWebpackPlugin({
       template: "./static/index.html",
