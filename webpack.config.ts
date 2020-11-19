@@ -3,6 +3,7 @@ import HtmlWebpackPlugin from "html-webpack-plugin";
 
 const config: any = {
   entry: "./static/src/index.tsx",
+  mode: "production",
   module: {
     rules: [
       {
