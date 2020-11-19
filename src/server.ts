@@ -2,14 +2,12 @@ import express from "express";
 import cors from "cors";
 import bodyParser from "body-parser";
 import * as yup from "yup";
-import fs from "fs";
 import dotenv from "dotenv";
 import multer from "multer";
 import inviteStudents from "./massinvite/inviteStudents";
 import enrollStudents from "./massenroll/enrollStudents";
 import unenrollStudents from "./massunenroll/unenrollStudents";
 import uploadCertificate from "./certificates/uploadCertificate";
-import { askEmail, askPassword } from "./common/askCredentials";
 import authenticate from "./authentication/authentificate";
 import getMWToken from "./authentication/getMWToken";
 import readFile, { Student } from "./inv-enroll/readFile";
@@ -32,70 +30,6 @@ const corsOptions = {
 
 app.use(bodyParser.json());
 app.use(cors(corsOptions));
-
-// app.get("/", (_req, res) => {
-//   const resText =
-//     "/invite\n" +
-//     'fetch("hostname/invite", {\n' +
-//     '  method: "POST"\n' +
-//     "  headers: {\n" +
-//     '    "Content-Type": "application/json; charset=UTF-8",\n' +
-//     "  },\n" +
-//     "  body: {\n" +
-//     '    students: "user1;mail1@ma.ru;Name;LastName;;;\\nuser2;mail2@MumX.ru;Name;LastName;;;\n"' +
-//     "  }\n" +
-//     "})\n" +
-//     "\n" +
-//     "/enroll\n" +
-//     'fetch("hostname/enroll", {\n' +
-//     '  method: "POST"\n' +
-//     "  headers: {\n" +
-//     '    "Content-Type": "application/json; charset=UTF-8",\n' +
-//     "  },\n" +
-//     "  body: {\n" +
-//     "    courseInfo: {\n" +
-//     '      tag: "edu_tech",\n' +
-//     '      session: "fall_2020_spbu_spec"\n' +
-//     "    }\n" +
-//     '    students: "user1;mail1@ma.ru;Name;LastName;;;\\nuser2;mail2@MumX.ru;Name;LastName;;;\n"' +
-//     "  }\n" +
-//     "})\n" +
-//     "\n" +
-//     "/unenroll\n" +
-//     'fetch("hostname/unenroll", {\n' +
-//     '  method: "POST"\n' +
-//     "  headers: {\n" +
-//     '    "Content-Type": "application/json; charset=UTF-8",\n' +
-//     "  },\n" +
-//     "  body: {\n" +
-//     "    courseInfo: {\n" +
-//     '      tag: "edu_tech",\n' +
-//     '      session: "fall_2020_spbu_spec"\n' +
-//     "    }\n" +
-//     '    students: "user1;mail1@ma.ru;Name;LastName;;;\\nuser2;mail2@MumX.ru;Name;LastName;;;\n"' +
-//     "  }\n" +
-//     "})\n" +
-//     "\n" +
-//     "/certificate\n" +
-//     'fetch("hostname/certificate", {\n' +
-//     '  method: "POST"\n' +
-//     "  headers: {\n" +
-//     '    "Content-Type": "application/json; charset=UTF-8",\n' +
-//     "  },\n" +
-//     "  body: {\n" +
-//     '    email: "me@example.com"\n' +
-//     "    fullName: {\n" +
-//     "      name: Name,\n" +
-//     "      surname: Surname,\n" +
-//     "      secondName: Second,\n" +
-//     "    }\n" +
-//     "    grade: 95\n" +
-//     '    certificateUrl: "http://www.africau.edu/images/default/sample.pdf"\n' +
-//     "    courseName: 2017-006-001 Базы данных (15.02.2017 - 20.05.2017)" +
-//     "  }\n" +
-//     "})\n";
-//   res.send(resText);
-// });
 
 app.use(express.static("build/static"));
 
@@ -278,51 +212,34 @@ app.post("/combine/inv-enroll", upload.single("fileeeee"), async (req, res) => {
   res.json(results);
 });
 
+app.post("/authenticate", async (req, res) => {
+  const yupBody = yup.object().shape({
+    username: yup.string().required(),
+    password: yup.string().required(),
+  });
+  yupBody
+    .validate(req.body)
+    .then(async () => {
+      const { username, password } = req.body;
+      const cookies = await authenticate(username, password);
+      process.env.CSRF_TOKEN = cookies.get("csrftoken");
+      process.env.AUTHENTICATED_USER = cookies.get("authenticated_user");
+      process.env.SESSION_ID = cookies.get("sessionid");
+      process.env.CSRF_MIDDLEWARE_TOKEN = await getMWToken();
+      res.send("Authenticated");
+    })
+    .catch((err) => res.send(err.toString()));
+});
+
 const port = process.env.PORT || 8080;
-
-async function authorize() {
-  const res = await authenticate(await askEmail(), await askPassword());
-  return res;
-}
-
-async function loadMWToken() {
-  console.log("Loading CSRF middleware token");
-  process.env.CSRF_MIDDLEWARE_TOKEN = await getMWToken();
-}
-
-function saveEnv() {
-  return new Promise((resolve) =>
-    fs.writeFile(
-      ".env",
-      `CSRF_TOKEN=${process.env.CSRF_TOKEN}
-CSRF_MIDDLEWARE_TOKEN=${process.env.CSRF_MIDDLEWARE_TOKEN}
-AUTHENTICATED_USER=${process.env.AUTHENTICATED_USER}
-SESSION_ID=${process.env.SESSION_ID}`,
-      resolve
-    )
-  );
-}
 
 if (
   !process.env.CSRF_TOKEN ||
   !process.env.SESSION_ID ||
-  !process.env.AUTHENTICATED_USER
+  !process.env.AUTHENTICATED_USER ||
+  !process.env.CSRF_MIDDLEWARE_TOKEN
 ) {
-  console.log("User is not authenticated");
-  authorize().then((cookies) => {
-    process.env.CSRF_TOKEN = cookies.get("csrftoken");
-    process.env.AUTHENTICATED_USER = cookies.get("authenticated_user");
-    process.env.SESSION_ID = cookies.get("sessionid");
-    loadMWToken().then(() => {
-      saveEnv().then(() => startApp());
-    });
-  });
-} else {
-  process.env.CSRF_MIDDLEWARE_TOKEN
-    ? startApp()
-    : loadMWToken()
-        .then(() => saveEnv())
-        .then(() => startApp());
+  console.log("User is not authenticated!");
 }
 
 function startApp() {
@@ -330,3 +247,5 @@ function startApp() {
     console.log(`App is listening at http://localhost:${port}`);
   });
 }
+
+startApp();
