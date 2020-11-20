@@ -13,8 +13,7 @@ async function getMWToken() {
     })
     .then((page) => {
       let $ = cheerio.load(page);
-      let res = $("form#main_form [name=csrfmiddlewaretoken]").attr("value");
-      return res || "";
+      return $("form#main_form [name=csrfmiddlewaretoken]").attr("value") || "";
     });
 }
 

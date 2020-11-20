@@ -24,6 +24,14 @@ const config: any = {
     contentBase: path.join(__dirname, "static"),
     compress: true,
     port: 9000,
+    historyApiFallback: true,
+    proxy: {
+      "/api/*": {
+        target: "http://localhost:8080",
+        secure: false,
+        changeOrigin: true,
+      },
+    },
   },
   devtool: "source-map",
   plugins: [

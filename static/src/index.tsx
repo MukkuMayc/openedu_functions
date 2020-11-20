@@ -1,7 +1,8 @@
-import App from "./components/App";
-import { h, render } from "preact";
+import * as React from 'react';
+import ReactDOM from "react-dom"
+import App from "./App";
 
-render(
-  <App compiler="hello" framework="world" />,
+ReactDOM.render(
+  <App />,
   document.getElementById("root")!
 );

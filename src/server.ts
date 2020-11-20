@@ -34,7 +34,7 @@ app.use(cors(corsOptions));
 
 app.use(express.static("build/static"));
 
-app.post("/invite", async (req, res) => {
+app.post("/api/invite", async (req, res) => {
   const yupBody = yup.object().shape({
     students: yup.string().required(),
   });
@@ -53,7 +53,7 @@ app.post("/invite", async (req, res) => {
     .catch((err) => res.status(400).send(err.toString()));
 });
 
-app.post("/enroll", async (req, res) => {
+app.post("/api/enroll", async (req, res) => {
   const yupBody = yup.object().shape({
     courseInfo: yup.object().shape({
       tag: yup.string().required(),
@@ -76,7 +76,7 @@ app.post("/enroll", async (req, res) => {
     .catch((err) => res.status(400).send(err.toString()));
 });
 
-app.post("/unenroll", async (req, res) => {
+app.post("/api/unenroll", async (req, res) => {
   const yupBody = yup.object().shape({
     courseInfo: yup.object().shape({
       tag: yup.string().required(),
@@ -99,7 +99,7 @@ app.post("/unenroll", async (req, res) => {
     .catch((err) => res.status(400).send(err.toString()));
 });
 
-app.post("/certificate", async (req, res) => {
+app.post("/api/certificate", async (req, res) => {
   const yupBody = yup.object().shape({
     email: yup.string().email().required("Email is required"),
     fullName: yup
@@ -135,7 +135,7 @@ app.post("/certificate", async (req, res) => {
     .catch((err) => res.status(400).send(err.toString()));
 });
 
-app.post("/combine/inv-enroll", upload.single("fileeeee"), async (req, res) => {
+app.post("/api/combine/inv-enroll", upload.single("file"), async (req, res) => {
   console.log("file", req.file);
   if (!req.file) {
     res.status(400).send("You sent no file");
@@ -213,7 +213,7 @@ app.post("/combine/inv-enroll", upload.single("fileeeee"), async (req, res) => {
   res.json(results);
 });
 
-app.post("/authenticate", async (req, res) => {
+app.post("/api/authenticate", async (req, res) => {
   const yupBody = yup.object().shape({
     username: yup.string().required(),
     password: yup.string().required(),
