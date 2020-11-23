@@ -2,6 +2,7 @@ import * as React from "react";
 import { Formik, Form, Field } from "formik";
 import ErrorMessage from "./ErrorMessage";
 import "./InviteEnroll.css";
+import ButtonWithLoading from "./ButtonWithLoading";
 
 async function sendForm(values: any) {
   let data = new FormData();
@@ -54,13 +55,13 @@ const InviteEnroll = () => (
                   />
                   <ErrorMessage message={errors.file} />
                 </div>
-                <button
+                <ButtonWithLoading
                   type="submit"
                   className="btn btn-primary"
                   disabled={isSubmitting}
                 >
                   Send
-                </button>
+                </ButtonWithLoading>
               </Form>
             )}
           </Formik>

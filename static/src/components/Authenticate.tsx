@@ -2,6 +2,7 @@ import * as React from "react";
 import { Formik, Form, Field } from "formik";
 import ErrorMessage from "./ErrorMessage";
 import "./Authenticate.css";
+import ButtonWithLoading from "./ButtonWithLoading";
 
 async function authenticate(username: string, password: string) {
   const res = await fetch("/api/authenticate", {
@@ -11,7 +12,12 @@ async function authenticate(username: string, password: string) {
   });
   return await res.text();
 }
-const Authenticate = () => (
+
+export interface IAuthenticateProps {
+  setAuthenticated: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+const Authenticate: React.FC<IAuthenticateProps> = ({ setAuthenticated }) => (
   <div className="authenticate container d-flex justify-content-center">
     <div className="login-form-wrapper card flex-fill">
       <div className="card-body">
@@ -28,6 +34,7 @@ const Authenticate = () => (
               setSubmitting(true);
               authenticate(values.username, values.password).then((res) => {
                 alert(res);
+                setAuthenticated(true);
                 setSubmitting(false);
               });
             }}
@@ -54,13 +61,13 @@ const Authenticate = () => (
                   />
                   <ErrorMessage message={errors.password} />
                 </div>
-                <button
+                <ButtonWithLoading
                   type="submit"
                   className="btn btn-primary"
                   disabled={isSubmitting}
                 >
                   Sign in
-                </button>
+                </ButtonWithLoading>
               </Form>
             )}
           </Formik>
@@ -69,4 +76,5 @@ const Authenticate = () => (
     </div>
   </div>
 );
+
 export default Authenticate;

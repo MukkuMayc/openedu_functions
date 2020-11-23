@@ -1,0 +1,6 @@
+.button-with-loading .spinner-border {
+  height: 1em;
+  width: 1em;
+  /* display: inline-block; */
+  margin-right: 0.5em;
+}
