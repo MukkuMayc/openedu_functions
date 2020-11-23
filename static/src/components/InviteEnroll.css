@@ -1,0 +1,12 @@
+label {
+  display: block;
+}
+@media (min-width: 576px) {
+  .send-list-form-wrapper {
+    margin-top: 3em;
+  }
+}
+
+.send-list-form-wrapper {
+  max-width: 600px;
+}
