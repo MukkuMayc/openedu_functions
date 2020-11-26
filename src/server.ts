@@ -11,7 +11,6 @@ import uploadCertificate from "./certificates/uploadCertificate";
 import authenticate from "./authentication/authentificate";
 import getMWToken from "./authentication/getMWToken";
 import readFile, { Student } from "./inv-enroll/readFile";
-import { CourseInfo } from "./common/types";
 import saveEnv from "./common/saveEnv";
 import isAuthenticated from "./authentication/isAuthenticated";
 
@@ -183,8 +182,8 @@ app.post("/api/combine/inv-enroll", upload.single("file"), async (req, res) => {
   });
 
   const studentsInCourses = students.reduce(
-    (acc: Map<CourseInfo, Student[]>, item) => {
-      const courseInfo = new CourseInfo(item.CourseName, item.Session);
+    (acc: Map<string, Student[]>, item) => {
+      const courseInfo = `${item.CourseName}, ${item.Session}`;
       acc.get(courseInfo) || acc.set(courseInfo, []);
       acc.get(courseInfo)!.push(item);
       return acc;
@@ -198,12 +197,12 @@ app.post("/api/combine/inv-enroll", upload.single("file"), async (req, res) => {
       ""
     );
     const [, name] =
-      course[0].identificator.match(
+      course[0].match(
         /\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/
       ) || [];
-    console.log({ identificator: name, session: course[0].session }, emails);
+    console.log({ identificator: name, session: course[1][0].Session }, emails);
     await enrollStudents(
-      { identificator: name, session: course[0].session },
+      { identificator: name, session: course[1][0].Session },
       emails
     ).then((res) => {
       results.enroll = res;

@@ -85,7 +85,7 @@ test("Unenrollment payload only from course and session", async () => {
 
   return expect(
     formUnenrollPayloadFromCourse(
-      { tag: "phylosophy", session: "fall_2020_spbu_spec" },
+      { identificator: "phylosophy", session: "fall_2020_spbu_spec" },
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
     )
   ).resolves.toBe(payload);
@@ -94,7 +94,7 @@ test("Unenrollment payload only from course and session", async () => {
 test("Unenrollment payload from nonexistent course", async () => {
   return expect(
     formUnenrollPayloadFromCourse(
-      { tag: "nonexistent_course", session: "fall_2020_spbu_spec" },
+      { identificator: "nonexistent_course", session: "fall_2020_spbu_spec" },
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
     )
   ).rejects.toThrow("Course was not found");
@@ -103,7 +103,7 @@ test("Unenrollment payload from nonexistent course", async () => {
 test("Unenrollment payload from nonexistent session", async () => {
   return expect(
     formUnenrollPayloadFromCourse(
-      { tag: "phylosophy", session: "nonexistent_session" },
+      { identificator: "phylosophy", session: "nonexistent_session" },
       "hoYNcpSVka@CFuJ.ru\r\nCMIqskTRKD@ESxX.ru\r\nncNQPMFgGD@zGpt.ru"
     )
   ).rejects.toThrow("Session was not found");

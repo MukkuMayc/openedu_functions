@@ -1,6 +1,7 @@
 import RequestFormPayload from "../common/RequestFormPayload";
 import findCourse from "../common/findCourse";
 import findSession from "../common/findSession";
+import { CourseInfo } from "../common/types";
 
 /**
  * Form payload for unenroll request
@@ -35,13 +36,10 @@ function formUnenrollPayload(
  * @returns Payload for unenroll request
  */
 async function formUnenrollPayloadFromCourse(
-  courseInfo: {
-    tag: string;
-    session: string;
-  },
+  courseInfo: CourseInfo,
   students: string
 ): Promise<string> {
-  const course = await findCourse(courseInfo.tag);
+  const course = await findCourse(courseInfo.identificator);
 
   if (course === null) {
     throw new Error("Course was not found");

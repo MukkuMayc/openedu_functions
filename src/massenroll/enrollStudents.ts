@@ -1,4 +1,5 @@
 import request from "../common/request";
+import { CourseInfo } from "../common/types";
 import { formEnrollPayloadFromCourse } from "./enrollPayload";
 
 /**
@@ -8,34 +9,25 @@ import { formEnrollPayloadFromCourse } from "./enrollPayload";
  * @returns JSON from server with status and redirect fields. If request is successful, status will be 0.
  */
 async function enrollStudents(
-  course: {
-    identificator: string;
-    session: string;
-  },
+  course: CourseInfo,
   students: string
 ): Promise<{ status: number; redirect: string }> {
-  const res = await formEnrollPayloadFromCourse(course, students).then(
-    async (res) => {
-      const res_1 = await request(
-        "https://openedu.ru/upd/spbu/student/massenroll/",
-        {
-          headers: {
-            "Content-Type":
-              "multipart/form-data; boundary=---------------------------myform",
-            referer: "https://openedu.ru/upd/spbu/student/massenroll/",
-          },
-          method: "POST",
-          body: res,
-        }
-      );
-      if (res_1.status !== 200) {
-        throw new Error(
-          `Request didn't succeed, status code is ${res_1.status}`
-        );
-      }
-      return res_1.json();
+  const payload = await formEnrollPayloadFromCourse(course, students);
+
+  const res = await request("https://openedu.ru/upd/spbu/student/massenroll/", {
+    headers: {
+      "Content-Type":
+        "multipart/form-data; boundary=---------------------------myform",
+      referer: "https://openedu.ru/upd/spbu/student/massenroll/",
+    },
+    method: "POST",
+    body: payload,
+  }).then((res) => {
+    if (res.status !== 200) {
+      throw new Error(`Request didn't succeed, status code is ${res.status}`);
     }
-  );
+    return res.json();
+  });
 
   return res;
 }

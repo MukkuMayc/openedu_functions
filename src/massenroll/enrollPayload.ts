@@ -1,6 +1,7 @@
 import RequestFormPayload from "../common/RequestFormPayload";
 import findCourse from "../common/findCourse";
 import findSession from "../common/findSession";
+import { CourseInfo } from "../common/types";
 
 /**
  * Form payload for enroll request
@@ -35,10 +36,7 @@ function formEnrollPayload(
  * @returns Payload for enroll request
  */
 async function formEnrollPayloadFromCourse(
-  courseInfo: {
-    identificator: string;
-    session: string;
-  },
+  courseInfo: CourseInfo,
   students: string
 ): Promise<string> {
   const course = await findCourse(courseInfo.identificator);
