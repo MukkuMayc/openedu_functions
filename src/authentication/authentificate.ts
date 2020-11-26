@@ -1,6 +1,7 @@
 import parseString from "set-cookie-parser";
 import fetch, { Response as NodeResponse } from "node-fetch";
 import getTokens from "./getTokens";
+import { DefaultError, ErrorType } from "../common/errors";
 
 class Cookies extends Map<string, string> {}
 
@@ -41,7 +42,7 @@ async function handleResponse(
   if (res.ok) {
     const result = domains.find((d) => d.domain === "openedu.ru")!.cookies;
     if (result.get("authenticated") === "0") {
-      throw Error("Fail to authenticate");
+      throw new DefaultError(ErrorType.AUTHENTICATION_FAILED);
     }
     return domains.find((d) => d.domain === "openedu.ru")!.cookies;
   }
