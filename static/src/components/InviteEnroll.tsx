@@ -43,7 +43,6 @@ const InviteEnroll = () => (
               <Form className="invite-enroll-form">
                 <div className="form-group">
                   <label htmlFor="form-file">Students list</label>
-
                   <Field
                     id="form-file"
                     type="file"
