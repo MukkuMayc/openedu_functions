@@ -1,10 +1,9 @@
 label {
   display: block;
 }
-@media (min-width: 576px) {
-  .login-form-wrapper {
-    margin-top: 3em;
-  }
+
+.login-form-wrapper {
+  margin-top: 7em;
 }
 
 .login-form-wrapper {
