@@ -18,6 +18,12 @@ async function inviteStudents(students: string): Promise<string> {
     method: "POST",
     body: formInvitePayload(students),
   }).then((res) => {
+    if (
+      res.headers.raw().location &&
+      res.headers.raw().location[0].includes("sso.openedu.ru/oauth2/authorize")
+    ) {
+      throw new Error("User is not authenticated");
+    }
     let task_id = new RegExp("#[0-9]+").exec(
       parseString(res.headers.raw()["set-cookie"])[0]?.value
     );

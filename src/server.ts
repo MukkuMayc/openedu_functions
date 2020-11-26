@@ -13,6 +13,7 @@ import getMWToken from "./authentication/getMWToken";
 import readFile, { Student } from "./inv-enroll/readFile";
 import { CourseInfo } from "./common/types";
 import saveEnv from "./common/saveEnv";
+import isAuthenticated from "./authentication/isAuthenticated";
 
 const result = dotenv.config();
 
@@ -231,6 +232,11 @@ app.post("/api/authenticate", async (req, res) => {
       res.send("Authenticated");
     })
     .catch((err) => res.send(err.toString()));
+});
+
+app.get("/api/check-authentication", async (_req, res) => {
+  const authenticated = await isAuthenticated();
+  res.send(authenticated ? "Authenticated" : "Not authenticated");
 });
 
 const port = process.env.PORT || 8080;
