@@ -7,12 +7,10 @@ import ButtonWithLoading from "./ButtonWithLoading";
 async function sendForm(values: any) {
   let data = new FormData();
   data.append("file", values.file);
-  fetch("/api/combine/inv-enroll", {
+  return await fetch("/api/combine/inv-enroll", {
     method: "post",
     body: data,
-  })
-    .then((res) => res.text())
-    .then((text) => alert(text));
+  }).then((res) => res.text());
 }
 
 const InviteEnroll = () => (
@@ -34,8 +32,9 @@ const InviteEnroll = () => (
             }}
             onSubmit={(values, { setSubmitting }) => {
               setSubmitting(true);
-              sendForm(values).then(() => {
+              sendForm(values).then((res) => {
                 setSubmitting(false);
+                alert(res);
               });
             }}
           >

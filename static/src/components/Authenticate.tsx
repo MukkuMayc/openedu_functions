@@ -33,9 +33,9 @@ const Authenticate: React.FC<IAuthenticateProps> = ({ setAuthenticated }) => (
             onSubmit={(values, { setSubmitting }) => {
               setSubmitting(true);
               authenticate(values.username, values.password).then((res) => {
-                alert(res);
                 setAuthenticated(res === "Authenticated");
                 setSubmitting(false);
+                alert(res);
               });
             }}
           >
