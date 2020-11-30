@@ -19,25 +19,22 @@ const NavBar: React.FC<INavBarProps> = ({ authenticated }) => {
           >
             Home
           </Link>
-          {authenticated ? (
-            <Link
-              to="/invite-enroll"
-              className={`nav-item nav-link ${
-                pathname === "/invite-enroll" ? "active" : ""
-              }`}
-            >
-              Invite and enroll students
-            </Link>
-          ) : (
-            <Link
-              to="/authenticate"
-              className={`nav-item nav-link ${
-                pathname === "/authenticate" ? "active" : ""
-              }`}
-            >
-              Authenticate
-            </Link>
-          )}
+          <Link
+            to="/invite-enroll"
+            className={`nav-item nav-link ${
+              pathname === "/invite-enroll" ? "active" : ""
+            }`}
+          >
+            Invite and enroll students
+          </Link>
+          <Link
+            to="/authenticate"
+            className={`nav-item nav-link ${
+              pathname === "/authenticate" ? "active" : ""
+            }`}
+          >
+            {authenticated ? "Reauthenticate" : "Authenticate"}
+          </Link>
         </div>
         <span className="navbar-text">
           Status:{" "}
