@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Formik, Form, Field } from "formik";
-import ErrorMessage from "./ErrorMessage";
 import "./Authenticate.css";
 import ButtonWithLoading from "./ButtonWithLoading";
 
@@ -49,7 +48,7 @@ const Authenticate: React.FC<IAuthenticateProps> = ({ setAuthenticated }) => (
                     name="username"
                     className="form-control"
                   />
-                  <ErrorMessage message={errors.username} />
+                  <small className="text-danger">{errors.username}</small>
                 </div>
                 <div className="form-group">
                   <label htmlFor="password">Password</label>
@@ -59,7 +58,7 @@ const Authenticate: React.FC<IAuthenticateProps> = ({ setAuthenticated }) => (
                     name="password"
                     className="form-control"
                   />
-                  <ErrorMessage message={errors.password} />
+                  <small className="text-danger">{errors.password}</small>
                 </div>
                 <ButtonWithLoading
                   type="submit"

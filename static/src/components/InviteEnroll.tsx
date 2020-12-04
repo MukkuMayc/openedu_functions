@@ -1,6 +1,5 @@
 import * as React from "react";
 import { Formik, Form, Field } from "formik";
-import ErrorMessage from "./ErrorMessage";
 import "./InviteEnroll.css";
 import ButtonWithLoading from "./ButtonWithLoading";
 
@@ -51,7 +50,7 @@ const InviteEnroll = () => (
                       setFieldValue("file", event.currentTarget.files[0]);
                     }}
                   />
-                  <ErrorMessage message={errors.file} />
+                  <small className="text-danger">{errors.file}</small>
                 </div>
                 <ButtonWithLoading
                   type="submit"
