@@ -1,0 +1,8 @@
+.Loading .spinner-border {
+  width: 100px;
+  height: 100px;
+}
+
+.Loading {
+  margin-top: 1em;
+}

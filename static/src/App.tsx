@@ -5,6 +5,7 @@ import Authenticate from "./components/Authenticate";
 import { Home } from "./components/Home";
 import InviteEnroll from "./components/InviteEnroll";
 import { NavBar } from "./components/NavBar";
+import { Loading } from "./Loading";
 
 const App = () => {
   const [authenticated, setAuthenticated] = useState(false);
@@ -24,9 +25,11 @@ const App = () => {
 
   return (
     <div className="app">
-      {!authenticating && (
-        <Router>
-          <NavBar authenticated={authenticated} />
+      <Router>
+        <NavBar authenticated={authenticated} />
+        {authenticating ? (
+          <Loading />
+        ) : (
           <Switch>
             <Route path="/" exact>
               <Home />
@@ -38,8 +41,8 @@ const App = () => {
               <InviteEnroll />
             </Route>
           </Switch>
-        </Router>
-      )}
+        )}
+      </Router>
     </div>
   );
 };
