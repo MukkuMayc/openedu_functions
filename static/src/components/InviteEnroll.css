@@ -4,9 +4,6 @@ label {
 
 .send-list-form-wrapper {
   margin-top: 1em;
-}
-
-.send-list-form-wrapper {
   max-width: 600px;
   width: 100%;
 }

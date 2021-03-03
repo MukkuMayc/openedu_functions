@@ -10,8 +10,7 @@ const NavBar: React.FC<INavBarProps> = ({ authenticated }) => {
   const pathname = useLocation().pathname;
   return (
     <>
-      <div className="navbar-filler" />
-      <nav className="navbar fixed-top navbar-expand-lg navbar-light bg-light">
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container">
           <div className="navbar-nav">
             <Link
