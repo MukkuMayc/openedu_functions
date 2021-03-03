@@ -12,7 +12,7 @@ interface Student {
 
 async function readFile(path: string): Promise<Student[]> {
   let students: Student[] = [];
-  await new Promise((resolve) =>
+  await new Promise<void>((resolve) =>
     fs
       .createReadStream(path)
       .pipe(

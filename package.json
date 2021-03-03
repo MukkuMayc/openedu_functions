@@ -7,13 +7,14 @@
     "test": "jest --setupFiles dotenv/config",
     "tsc": "tsc",
     "build": "tsc && webpack",
-    "server": "nodemon --exec 'npx ts-node' ./src/server.ts", 
+    "server": "nodemon --exec 'npx ts-node' ./src/server.ts",
     "client": "webpack-dev-server",
     "all": "npm run server && npm run client"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "bootstrap": "^4.6.0",
     "cheerio": "^1.0.0-rc.3",
     "cors": "^2.8.5",
     "csv-parser": "^2.3.3",
@@ -23,6 +24,7 @@
     "multer": "^1.4.2",
     "node-fetch": "^2.6.1",
     "react": "^17.0.1",
+    "react-bootstrap": "^1.5.1",
     "react-dom": "^17.0.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",

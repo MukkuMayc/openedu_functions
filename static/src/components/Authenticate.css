@@ -4,8 +4,5 @@ label {
 
 .login-form-wrapper {
   margin-top: 1em;
-}
-
-.login-form-wrapper {
   max-width: 600px;
 }
