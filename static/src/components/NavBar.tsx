@@ -11,7 +11,7 @@ const NavBar: React.FC<INavBarProps> = ({ authenticated }) => {
   const pathname = useLocation().pathname;
   return (
     <>
-      <Navbar bg="light" expand="lg">
+      <Navbar bg="light" expand="lg" sticky="top">
         <Navbar.Toggle aria-controls="navbarToggler" />
         <Navbar.Collapse id="navbarToggler">
           <Container>
