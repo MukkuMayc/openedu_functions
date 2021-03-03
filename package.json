@@ -7,7 +7,7 @@
     "test": "jest --setupFiles dotenv/config",
     "tsc": "tsc",
     "build": "tsc && webpack",
-    "server": "nodemon src/server.ts",
+    "server": "nodemon --exec 'npx ts-node' ./src/server.ts", 
     "client": "webpack-dev-server",
     "all": "npm run server && npm run client"
   },
@@ -49,7 +49,7 @@
     "style-loader": "^2.0.0",
     "ts-jest": "^26.4.3",
     "ts-loader": "^8.0.11",
-    "ts-node": "^9.0.0",
+    "ts-node": "^9.1.1",
     "typescript": "^4.0.5",
     "webpack": "^4.44.2",
     "webpack-cli": "^3.3.10",
