@@ -6,7 +6,7 @@ const question = (str: string) =>
   new Promise((resolve) => rl.question(str, resolve));
 
 async function askEmail(): Promise<string> {
-  const emailSchema = yup.string().email();
+  const emailSchema = yup.string().email().required();
   while (true) {
     const email = await question("Enter email: ");
     if (email) {
@@ -14,15 +14,20 @@ async function askEmail(): Promise<string> {
         console.log("Email is not valid");
         continue;
       }
-      return String(email);
+      return email;
     }
   }
 }
 
 async function askPassword(): Promise<string> {
   while (true) {
+    const passwordSchema = yup.string().required().min(6, "Password length must be at least 6 symbols");
     const password = await question("Enter password: ");
-    if (password) return String(password);
+    if (!passwordSchema.isValidSync(password)) {
+      console.log("Password is not valid");
+      continue;
+    }
+    return String(password);
   }
 }
 
