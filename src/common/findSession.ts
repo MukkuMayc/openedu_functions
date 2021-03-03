@@ -1,4 +1,4 @@
-import request from "./request";
+import listSessionsPage from "./listSessionsPage";
 
 /**
  * Find session by query
@@ -24,14 +24,7 @@ async function findSession(
   };
   let page = 0;
   do {
-    res = await request(
-      `https://openedu.ru/autocomplete/session/active?page=${++page}&forward={"course":"${courseId}","university":"${university}"}`,
-      {
-        headers: {
-          referer: "https://openedu.ru/upd/spbu/student/massenroll/",
-        },
-      }
-    ).then((res) => res.json());
+    res = await listSessionsPage(courseId, ++page, university);
 
     course =
       res.results.find((el) => {

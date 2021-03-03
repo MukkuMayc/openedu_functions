@@ -1,4 +1,4 @@
-import request from "./request";
+import listCoursesPage from "./listCoursesPage";
 
 /**
  * Find course by query
@@ -22,16 +22,7 @@ async function findCourse(
   };
   let page = 0;
   do {
-    res = await request(
-      `https://openedu.ru/autocomplete/course/?page=${++page}&q=${encodeURI(
-        query
-      )}&forward={"university":"${university}"}`,
-      {
-        headers: {
-          referer: "https://openedu.ru/upd/spbu/student/massenroll/",
-        },
-      }
-    ).then((res) => res.json());
+    res = await listCoursesPage(query, ++page, university);
 
     course =
       res.results.find((el) => {
