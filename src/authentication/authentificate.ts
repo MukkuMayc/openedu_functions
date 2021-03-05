@@ -70,27 +70,28 @@ async function handleResponse(
  * @param username usename or email
  */
 async function authenticate(username: string, password: string) {
-  const cookies: Cookies = new Cookies();
-  const tokens = await getTokens();
-  cookies.set("csrftoken", tokens.CSRFToken);
-  cookies.set("authenticated", "0");
-  cookies.set("authenticated_user", "Anonymous");
-
   const domains = [
     {
       domain: "sso.openedu.ru",
-      cookies: cookies,
+      cookies: new Cookies(),
     },
     {
       domain: "openedu.ru",
-      cookies: new Map(),
+      cookies: new Cookies(),
     },
   ];
+
+  const tokens = await getTokens();
+  domains[0].cookies.set("csrftoken", tokens.CSRFToken);
+  domains[0].cookies.set("authenticated", "0");
+  domains[0].cookies.set("authenticated_user", "Anonymous");
 
   return await fetch("https://sso.openedu.ru/login/", {
     method: "post",
     headers: {
-      Cookie: [...cookies].map((el) => `${el[0]}=${el[1]}`).join(";"),
+      Cookie: [...domains[0].cookies]
+        .map((el) => `${el[0]}=${el[1]}`)
+        .join(";"),
       "Content-Type": "application/x-www-form-urlencoded",
       Referer: "https://sso.openedu.ru/login/",
     },
