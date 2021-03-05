@@ -1,10 +1,12 @@
-class CourseInfo {
+interface CourseInfo {
   identificator: string;
   session: string;
-  constructor(i: string, s: string) {
-    this.identificator = i;
-    this.session = s;
-  }
 }
 
-export { CourseInfo };
+interface Fullname {
+  name: string | undefined;
+  surname: string | undefined;
+  secondname: string | undefined;
+}
+
+export { CourseInfo, Fullname };

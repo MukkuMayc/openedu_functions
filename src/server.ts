@@ -35,14 +35,17 @@ app.use(cors(corsOptions));
 app.use(express.static("build/static"));
 
 app.post("/api/invite", async (req, res) => {
-  const yupBody = yup.object().shape({
-    students: yup.string().required(),
-  });
+  const yupBody = yup
+    .object()
+    .shape({
+      students: yup.string().required(),
+    })
+    .required();
 
   yupBody
     .validate(req.body)
-    .then(() =>
-      inviteStudents(req.body.students)
+    .then((body) =>
+      inviteStudents(body.students)
         .then((result) => {
           res.json(result);
         })
@@ -54,18 +57,30 @@ app.post("/api/invite", async (req, res) => {
 });
 
 app.post("/api/enroll", async (req, res) => {
-  const yupBody = yup.object().shape({
-    courseInfo: yup.object().shape({
-      tag: yup.string().required(),
-      session: yup.string().required(),
-    }),
-    students: yup.string().required(),
-  });
+  const yupBody = yup
+    .object()
+    .shape({
+      courseInfo: yup
+        .object()
+        .shape({
+          tag: yup.string().required(),
+          session: yup.string().required(),
+        })
+        .required(),
+      students: yup.string().required(),
+    })
+    .required();
 
   await yupBody
     .validate(req.body)
-    .then(() =>
-      enrollStudents(req.body.courseInfo, req.body.students)
+    .then((body) =>
+      enrollStudents(
+        {
+          identificator: body.courseInfo.tag,
+          session: body.courseInfo.session,
+        },
+        body.students
+      )
         .then((result) => {
           res.json(result);
         })
@@ -77,18 +92,30 @@ app.post("/api/enroll", async (req, res) => {
 });
 
 app.post("/api/unenroll", async (req, res) => {
-  const yupBody = yup.object().shape({
-    courseInfo: yup.object().shape({
-      tag: yup.string().required(),
-      session: yup.string().required(),
-    }),
-    students: yup.string().required(),
-  });
+  const yupBody = yup
+    .object()
+    .shape({
+      courseInfo: yup
+        .object()
+        .shape({
+          tag: yup.string().required(),
+          session: yup.string().required(),
+        })
+        .required(),
+      students: yup.string().required(),
+    })
+    .required();
 
   await yupBody
     .validate(req.body)
-    .then(() =>
-      unenrollStudents(req.body.courseInfo, req.body.students)
+    .then((body) =>
+      unenrollStudents(
+        {
+          identificator: body.courseInfo.tag,
+          session: body.courseInfo.session,
+        },
+        body.students
+      )
         .then((result) => {
           res.json(result);
         })
@@ -100,30 +127,43 @@ app.post("/api/unenroll", async (req, res) => {
 });
 
 app.post("/api/certificate", async (req, res) => {
-  const yupBody = yup.object().shape({
-    email: yup.string().email().required("Email is required"),
-    fullName: yup
-      .object()
-      .shape({
-        name: yup.string().notRequired(),
-        surname: yup.string().notRequired(),
-        secondName: yup.string().notRequired(),
-      })
-      .required(),
-    grade: yup.number().required(),
-    certificateUrl: yup.string().url().required(),
-    courseName: yup.string(),
-  });
+  const yupBody = yup
+    .object()
+    .shape({
+      email: yup.string().email().required("Email is required"),
+      fullName: yup
+        .object()
+        .shape({
+          name: yup.string().notRequired(),
+          surname: yup.string().notRequired(),
+          secondname: yup.string().notRequired(),
+        })
+        .required()
+        .test(
+          "not empty",
+          "All fields of fullname are empty",
+          (value) =>
+            (value?.name?.length !== undefined && value?.name?.length > 0) ||
+            (value?.surname?.length !== undefined &&
+              value?.surname?.length > 0) ||
+            (value?.secondname?.length !== undefined &&
+              value?.secondname?.length > 0)
+        ),
+      grade: yup.number().required(),
+      certificateUrl: yup.string().url().required(),
+      courseName: yup.string().required(),
+    })
+    .required();
 
   await yupBody
     .validate(req.body)
-    .then(() =>
+    .then((body) =>
       uploadCertificate(
-        req.body.email,
-        req.body.fullName,
-        req.body.grade,
-        req.body.certificateUrl,
-        req.body.courseName
+        body.email,
+        body.fullName,
+        body.grade,
+        body.certificateUrl,
+        body.courseName
       )
         .then((result) => {
           res.json(result);
@@ -214,14 +254,18 @@ app.post("/api/combine/inv-enroll", upload.single("file"), async (req, res) => {
 });
 
 app.post("/api/authenticate", async (req, res) => {
-  const yupBody = yup.object().shape({
-    username: yup.string().required(),
-    password: yup.string().required(),
-  });
+  const yupBody = yup
+    .object()
+    .shape({
+      username: yup.string().required(),
+      password: yup.string().required(),
+    })
+    .required();
+
   yupBody
     .validate(req.body)
-    .then(async () => {
-      const { username, password } = req.body;
+    .then(async (body) => {
+      const { username, password } = body;
       const cookies = await authenticate(username, password);
       process.env.CSRF_TOKEN = cookies.get("csrftoken");
       process.env.AUTHENTICATED_USER = cookies.get("authenticated_user");

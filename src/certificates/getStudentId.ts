@@ -1,4 +1,5 @@
 import listSessionsPage from "../common/listSessionsPage";
+import { Fullname } from "../common/types";
 import getStudentIdInSession from "./getStudentIdInSession";
 
 /**
@@ -10,11 +11,13 @@ import getStudentIdInSession from "./getStudentIdInSession";
  * @param dates    Dates that presented in course name, sessions with same date will have priority in search
  * @returns Student's id
  */
-async function getStudentId(email: string, fullName: {
-  name: string;
-  surname: string;
-  secondName: string;
-}, courseId: number, title: string = "", dates: string[] = []): Promise<number | null> {
+async function getStudentId(
+  email: string,
+  fullName: Fullname,
+  courseId: number,
+  title: string = "",
+  dates: string[] = []
+): Promise<number | null> {
   let studentId;
   let page = 0;
   let morePages = false;
@@ -53,7 +56,11 @@ async function getStudentId(email: string, fullName: {
 
     for (const session of sessions) {
       try {
-        studentId = await getStudentIdInSession(email, fullName, parseInt(session.id));
+        studentId = await getStudentIdInSession(
+          email,
+          fullName,
+          parseInt(session.id)
+        );
         console.log(`Found student ${email} at "${title}", "${session.text}"`);
         break;
       } catch (err) {

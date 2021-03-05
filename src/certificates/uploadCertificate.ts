@@ -2,6 +2,7 @@ import request from "../common/request";
 import RequestFormPayload from "../common/RequestFormPayload";
 import findCourse from "../common/findCourse";
 import getStudentId from "./getStudentId";
+import { Fullname } from "../common/types";
 
 /**
  * Upload certificate for student
@@ -14,14 +15,16 @@ import getStudentId from "./getStudentId";
  *                   `/\d{4}-\d{3}-\d{3} (.*) \(\d{2}.\d{2}.\d{4} - \d{2}.\d{2}.\d{4}\)/`
  * @returns "Success!" in case of success and Error in another
  */
-async function uploadCertificate(email: string, fullName: {
-  name: string;
-  surname: string;
-  secondName: string;
-}, grade: number, certUrl: string, courseName: string): Promise<string> {
+async function uploadCertificate(
+  email: string,
+  fullName: Fullname,
+  grade: number,
+  certUrl: string,
+  courseName: string
+): Promise<string> {
   const [, courseNormalName, ...courseDates] = courseName.match(
     /\d{4}-\d{3}-\d{3} (.*) \((\d{2}.\d{2}.\d{4}) - (\d{2}.\d{2}.\d{4})\)/
-  ) || ['', courseName];
+  ) || ["", courseName];
 
   let course = await findCourse(courseNormalName);
   if (!course) throw Error(`Course "${courseNormalName}" was not found`);

@@ -1,6 +1,7 @@
 import studentsSelector from "./studentsSelector";
 import getStudentIdBF from "./getStudentIdBF";
 import { DefaultError, ErrorType } from "../common/errors";
+import { Fullname } from "../common/types";
 
 /**
  * Search for the student's id in the session
@@ -11,11 +12,7 @@ import { DefaultError, ErrorType } from "../common/errors";
  */
 async function getStudentIdInSession(
   email: string,
-  fullName: {
-    name: string;
-    surname: string;
-    secondName: string;
-  },
+  fullName: Fullname,
   session: number
 ): Promise<number> {
   const handleResult = (
@@ -34,7 +31,7 @@ async function getStudentIdInSession(
   id =
     id ||
     (await studentsSelector(
-      `${fullName.name} ${fullName.surname} ${fullName.secondName}`,
+      `${fullName.name} ${fullName.surname} ${fullName.secondname}`,
       session
     ).then((res) => handleResult(email, res)));
 
